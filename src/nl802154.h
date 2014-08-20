@@ -18,18 +18,14 @@
  *
  */
 
-#ifndef __LINUX_NL802154_H
-#define __LINUX_NL802154_H
+#ifndef NL802154_H
+#define NL802154_H
 
 #define NL802154_GENL_NAME "nl802154"
 
-/* commands */
-/* REQ should be responded with CONF
- * and INDIC with RESP
- */
 enum nl802154_commands {
 /* don't change the order or add anything between, this is ABI! */
-/* Currently we don't shipping this file via uapi, ignore the above one */
+/* currently we don't shipping this file via uapi, ignore the above one */
 	NL802154_CMD_UNSPEC,
 
 	NL802154_CMD_GET_WPAN_PHY,		/* can dump */
@@ -42,6 +38,11 @@ enum nl802154_commands {
 	NL802154_CMD_NEW_INTERFACE,
 	NL802154_CMD_DEL_INTERFACE,
 
+	NL802154_CMD_SET_PAGE,
+	NL802154_CMD_SET_CHANNEL,
+
+	NL802154_CMD_SET_PAN_ID,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -51,7 +52,7 @@ enum nl802154_commands {
 
 enum nl802154_attrs {
 /* don't change the order or add anything between, this is ABI! */
-/* Currently we don't shipping this file via uapi, ignore the above one */
+/* currently we don't shipping this file via uapi, ignore the above one */
 	NL802154_ATTR_UNSPEC,
 
 	NL802154_ATTR_WPAN_PHY,
@@ -61,11 +62,14 @@ enum nl802154_attrs {
 	NL802154_ATTR_IFNAME,
 	NL802154_ATTR_IFTYPE,
 
-	NL802154_ATTR_GENERATION,
-
-	NL802154_ATTR_SUPPORTED_COMMANDS,
-
 	NL802154_ATTR_WPAN_DEV,
+
+	NL802154_ATTR_IFACE_SOCKET_OWNER,
+
+	NL802154_ATTR_PAGE,
+	NL802154_ATTR_CHANNEL,
+
+	NL802154_ATTR_PAN_ID,
 
 	/* add attributes here, update the policy in nl802154.c */
 
