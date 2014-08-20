@@ -3,3 +3,5 @@ iwpan
 iwpan-interface.o
 iwpan-iwpan.o
 iwpan-sections.o
+iwpan-mac.o
+iwpan-phy.o
