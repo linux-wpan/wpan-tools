@@ -118,8 +118,9 @@ static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 			printf("%.*s\n", (int)(lend - start), start);
 			start = lend + 1;
 		} while (end != lend);
-	} else
+	} else {
 		printf("\n");
+	}
 
 	if (!full || !cmd->help)
 		return;
