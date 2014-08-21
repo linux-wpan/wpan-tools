@@ -9,6 +9,7 @@
 #include <netlink/msg.h>
 #include <netlink/attr.h>
 
+#include "nl_extras.h"
 #include "nl802154.h"
 #include "iwpan.h"
 
@@ -65,3 +66,30 @@ nla_put_failure:
 }
 COMMAND(set, channel, "<channel>",
 	NL802154_CMD_SET_CHANNEL, 0, CIB_PHY, handle_channel_set, NULL);
+
+static int handle_tx_power_set(struct nl802154_state *state,
+			       struct nl_cb *cb,
+			       struct nl_msg *msg,
+			       int argc, char **argv,
+			       enum id_input id)
+{
+	long dbm;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* TX_POWER */
+	dbm = strtol(argv[0], &end, 10);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_S8(msg, NL802154_ATTR_TX_POWER, dbm);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, tx_power, "<dBm>",
+	NL802154_CMD_SET_TX_POWER, 0, CIB_PHY, handle_tx_power_set, NULL);

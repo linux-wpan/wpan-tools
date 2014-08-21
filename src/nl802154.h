@@ -43,6 +43,8 @@ enum nl802154_commands {
 
 	NL802154_CMD_SET_PAN_ID,
 
+	NL802154_CMD_SET_TX_POWER,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -70,6 +72,8 @@ enum nl802154_attrs {
 	NL802154_ATTR_CHANNEL,
 
 	NL802154_ATTR_PAN_ID,
+
+	NL802154_ATTR_TX_POWER,
 
 	/* add attributes here, update the policy in nl802154.c */
 
