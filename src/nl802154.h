@@ -44,6 +44,7 @@ enum nl802154_commands {
 	NL802154_CMD_SET_PAN_ID,
 
 	NL802154_CMD_SET_TX_POWER,
+	NL802154_CMD_SET_CCA_MODE,
 
 	/* add new commands above here */
 
@@ -74,6 +75,8 @@ enum nl802154_attrs {
 	NL802154_ATTR_PAN_ID,
 
 	NL802154_ATTR_TX_POWER,
+
+	NL802154_ATTR_CCA_MODE,
 
 	/* add attributes here, update the policy in nl802154.c */
 

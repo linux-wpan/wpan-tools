@@ -93,3 +93,30 @@ nla_put_failure:
 }
 COMMAND(set, tx_power, "<dBm>",
 	NL802154_CMD_SET_TX_POWER, 0, CIB_PHY, handle_tx_power_set, NULL);
+
+static int handle_cca_mode_set(struct nl802154_state *state,
+			       struct nl_cb *cb,
+			       struct nl_msg *msg,
+			       int argc, char **argv,
+			       enum id_input id)
+{
+	unsigned long cca_mode;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* CCA_MODE */
+	cca_mode = strtoul(argv[0], &end, 10);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_U8(msg, NL802154_ATTR_CCA_MODE, cca_mode);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, cca_mode, "<mode>",
+	NL802154_CMD_SET_CCA_MODE, 0, CIB_PHY, handle_cca_mode_set, NULL);
