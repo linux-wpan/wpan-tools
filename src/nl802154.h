@@ -46,6 +46,8 @@ enum nl802154_commands {
 	NL802154_CMD_SET_TX_POWER,
 	NL802154_CMD_SET_CCA_MODE,
 
+	NL802154_CMD_SET_MAX_FRAME_RETRIES,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -77,6 +79,8 @@ enum nl802154_attrs {
 	NL802154_ATTR_TX_POWER,
 
 	NL802154_ATTR_CCA_MODE,
+
+	NL802154_ATTR_MAX_FRAME_RETRIES,
 
 	/* add attributes here, update the policy in nl802154.c */
 
