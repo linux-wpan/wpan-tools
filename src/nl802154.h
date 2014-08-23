@@ -48,6 +48,10 @@ enum nl802154_commands {
 
 	NL802154_CMD_SET_MAX_FRAME_RETRIES,
 
+	NL802154_CMD_SET_MAX_BE,
+	NL802154_CMD_SET_MAX_CSMA_BACKOFFS,
+	NL802154_CMD_SET_MIN_BE,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -81,6 +85,10 @@ enum nl802154_attrs {
 	NL802154_ATTR_CCA_MODE,
 
 	NL802154_ATTR_MAX_FRAME_RETRIES,
+
+	NL802154_ATTR_MAX_BE,
+	NL802154_ATTR_MAX_CSMA_BACKOFFS,
+	NL802154_ATTR_MIN_BE,
 
 	/* add attributes here, update the policy in nl802154.c */
 
