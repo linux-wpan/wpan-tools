@@ -100,7 +100,7 @@ static int handle_cca_mode_set(struct nl802154_state *state,
 			       int argc, char **argv,
 			       enum id_input id)
 {
-	unsigned long cca_mode;
+	unsigned long cca_mode, cca_mode3_and;
 	char *end;
 
 	if (argc < 1)
@@ -111,6 +111,18 @@ static int handle_cca_mode_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
+	if (cca_mode == 3) {
+		if (argc < 2)
+			return 1;
+
+		/* CCA_MODE */
+		cca_mode3_and = strtoul(argv[1], &end, 10);
+		if (*end != '\0')
+			return 1;
+
+		NLA_PUT_U8(msg, NL802154_ATTR_CCA_MODE3_AND, cca_mode3_and);
+	}
+
 	NLA_PUT_U8(msg, NL802154_ATTR_CCA_MODE, cca_mode);
 
 	return 0;
@@ -118,5 +130,5 @@ static int handle_cca_mode_set(struct nl802154_state *state,
 nla_put_failure:
 	return -ENOBUFS;
 }
-COMMAND(set, cca_mode, "<mode>",
+COMMAND(set, cca_mode, "<mode|3 <1|0>>",
 	NL802154_CMD_SET_CCA_MODE, 0, CIB_PHY, handle_cca_mode_set, NULL);
