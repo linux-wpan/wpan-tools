@@ -40,6 +40,33 @@ nla_put_failure:
 COMMAND(set, pan_id, "<pan_id>",
 	NL802154_CMD_SET_PAN_ID, 0, CIB_NETDEV, handle_pan_id_set, NULL);
 
+static int handle_short_addr_set(struct nl802154_state *state,
+				 struct nl_cb *cb,
+				 struct nl_msg *msg,
+				 int argc, char **argv,
+				 enum id_input id)
+{
+	unsigned long short_addr;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* SHORT ADDR */
+	short_addr = strtoul(argv[0], &end, 0);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_U16(msg, NL802154_ATTR_SHORT_ADDR, short_addr);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, short_addr, "<short_addr>",
+	NL802154_CMD_SET_SHORT_ADDR, 0, CIB_NETDEV, handle_short_addr_set, NULL);
+
 static int handle_max_frame_retries_set(struct nl802154_state *state,
 					struct nl_cb *cb,
 					struct nl_msg *msg,
