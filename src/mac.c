@@ -178,3 +178,30 @@ nla_put_failure:
 COMMAND(set, min_be, "<min_be>",
 	NL802154_CMD_SET_MIN_BE, 0, CIB_NETDEV,
 	handle_min_be, NULL);
+
+static int handle_lbt_mode(struct nl802154_state *state,
+			   struct nl_cb *cb,
+			   struct nl_msg *msg,
+			   int argc, char **argv,
+			   enum id_input id)
+{
+	unsigned long mode;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* LBT_MODE */
+	mode = strtoul(argv[0], &end, 0);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_U8(msg, NL802154_ATTR_LBT_MODE, mode);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, lbt, "<1|0>",
+	NL802154_CMD_SET_LBT_MODE, 0, CIB_NETDEV, handle_lbt_mode, NULL);

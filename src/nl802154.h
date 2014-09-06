@@ -54,6 +54,8 @@ enum nl802154_commands {
 	NL802154_CMD_SET_MAX_CSMA_BACKOFFS,
 	NL802154_CMD_SET_MIN_BE,
 
+	NL802154_CMD_SET_LBT_MODE,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -94,6 +96,8 @@ enum nl802154_attrs {
 	NL802154_ATTR_MAX_BE,
 	NL802154_ATTR_MAX_CSMA_BACKOFFS,
 	NL802154_ATTR_MIN_BE,
+
+	NL802154_ATTR_LBT_MODE,
 
 	/* add attributes here, update the policy in nl802154.c */
 
