@@ -132,3 +132,30 @@ nla_put_failure:
 }
 COMMAND(set, cca_mode, "<mode|3 <1|0>>",
 	NL802154_CMD_SET_CCA_MODE, 0, CIB_PHY, handle_cca_mode_set, NULL);
+
+static int handle_cca_ed_level(struct nl802154_state *state,
+			       struct nl_cb *cb,
+			       struct nl_msg *msg,
+			       int argc, char **argv,
+			       enum id_input id)
+{
+	long level;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* CCA_ED_LEVEL */
+	level = strtol(argv[0], &end, 10);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_S32(msg, NL802154_ATTR_CCA_ED_LEVEL, level);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, cca_ed_level, "<level>",
+	NL802154_CMD_SET_CCA_ED_LEVEL, 0, CIB_PHY, handle_cca_ed_level, NULL);
