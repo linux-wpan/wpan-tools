@@ -7,6 +7,11 @@
 #define NLA_PUT_S8(n, attrtype, value) \
 	NLA_PUT_TYPE(n, int8_t, attrtype, value)
 
+static inline int8_t nla_get_s8(struct nlattr *nla)
+{
+	return *(int8_t *) nla_data(nla);
+}
+
 #endif /* NLA_S8 */
 
 #ifndef NLA_S16

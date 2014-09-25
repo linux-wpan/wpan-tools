@@ -4,6 +4,7 @@ bin_PROGRAMS = \
 iwpan_SOURCES = \
 	iwpan.c \
 	sections.c \
+	info.c \
 	interface.c \
 	phy.c \
 	mac.c

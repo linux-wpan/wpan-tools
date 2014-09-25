@@ -107,6 +107,9 @@ struct cmd {
 #define DECLARE_SECTION(_name)						\
 	extern struct cmd __section ## _ ## _name;
 
+int handle_cmd(struct nl802154_state *state, enum id_input idby,
+	       int argc, char **argv);
+
 DECLARE_SECTION(set);
 DECLARE_SECTION(get);
 
