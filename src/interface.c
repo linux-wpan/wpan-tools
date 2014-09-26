@@ -10,9 +10,27 @@
 #include <netlink/attr.h>
 
 #include "nl802154.h"
+#include "nl_extras.h"
 #include "iwpan.h"
 
 SECTION(interface);
+
+static char modebuf[100];
+
+const char *iftype_name(enum nl802154_iftype iftype)
+{
+	switch (iftype) {
+	case NL802154_IFTYPE_MONITOR:
+		return "monitor";
+	case NL802154_IFTYPE_NODE:
+		return "node";
+	case NL802154_IFTYPE_COORD:
+		return "coordinator";
+	default:
+		sprintf(modebuf, "Unknown mode (%d)", iftype);
+		return modebuf;
+	}
+}
 
 /* for help */
 #define IFACE_TYPES "Valid interface types are: node, monitor, coordinator."
@@ -98,3 +116,86 @@ static int handle_interface_del(struct nl802154_state *state,
 TOPLEVEL(del, NULL, NL802154_CMD_DEL_INTERFACE, 0, CIB_NETDEV, handle_interface_del,
 	 "Remove this virtual interface");
 HIDDEN(interface, del, NULL, NL802154_CMD_DEL_INTERFACE, 0, CIB_NETDEV, handle_interface_del);
+
+static int print_iface_handler(struct nl_msg *msg, void *arg)
+{
+	struct genlmsghdr *gnlh = nlmsg_data(nlmsg_hdr(msg));
+	struct nlattr *tb_msg[NL802154_ATTR_MAX + 1];
+	unsigned int *wpan_phy = arg;
+	const char *indent = "";
+
+	nla_parse(tb_msg, NL802154_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
+		  genlmsg_attrlen(gnlh, 0), NULL);
+
+	if (wpan_phy && tb_msg[NL802154_ATTR_WPAN_PHY]) {
+		unsigned int thiswpan_phy = nla_get_u32(tb_msg[NL802154_ATTR_WPAN_PHY]);
+		indent = "\t";
+		if (*wpan_phy != thiswpan_phy)
+			printf("phy#%d\n", thiswpan_phy);
+		*wpan_phy = thiswpan_phy;
+	}
+
+	if (tb_msg[NL802154_ATTR_IFNAME])
+		printf("%sInterface %s\n", indent, nla_get_string(tb_msg[NL802154_ATTR_IFNAME]));
+	else
+		printf("%sUnnamed/non-netdev interface\n", indent);
+
+	if (tb_msg[NL802154_ATTR_IFINDEX])
+		printf("%s\tifindex %d\n", indent, nla_get_u32(tb_msg[NL802154_ATTR_IFINDEX]));
+	if (tb_msg[NL802154_ATTR_WPAN_DEV])
+		printf("%s\twpan_dev 0x%llx\n", indent,
+		       (unsigned long long)nla_get_u64(tb_msg[NL802154_ATTR_WPAN_DEV]));
+	/* TODO byteorder? */
+	if (tb_msg[NL802154_ATTR_EXTENDED_ADDR])
+		printf("%s\textended_addr 0x%016llx\n", indent, nla_get_u64(tb_msg[NL802154_ATTR_EXTENDED_ADDR]));
+	/* TODO byteorder? */
+	if (tb_msg[NL802154_ATTR_SHORT_ADDR])
+		printf("%s\tshort_addr 0x%04x\n", indent, nla_get_u16(tb_msg[NL802154_ATTR_SHORT_ADDR]));
+	/* TODO byteorder? */
+	if (tb_msg[NL802154_ATTR_PAN_ID])
+		printf("%s\tpan_id 0x%04x\n", indent, nla_get_u16(tb_msg[NL802154_ATTR_PAN_ID]));
+	if (tb_msg[NL802154_ATTR_IFTYPE])
+		printf("%s\ttype %s\n", indent, iftype_name(nla_get_u32(tb_msg[NL802154_ATTR_IFTYPE])));
+	if (!wpan_phy && tb_msg[NL802154_ATTR_WPAN_PHY])
+		printf("%s\twpan_phy %d\n", indent, nla_get_u32(tb_msg[NL802154_ATTR_WPAN_PHY]));
+	if (tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES])
+		printf("%s\tmax_frame_retries %d\n", indent, nla_get_s8(tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES]));
+	if (tb_msg[NL802154_ATTR_MAX_BE])
+		printf("%s\tmax_be %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MAX_BE]));
+	if (tb_msg[NL802154_ATTR_MAX_CSMA_BACKOFFS])
+		printf("%s\tmax_csma_backoffs %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MAX_CSMA_BACKOFFS]));
+	if (tb_msg[NL802154_ATTR_MIN_BE])
+		printf("%s\tmin_be %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MIN_BE]));
+	if (tb_msg[NL802154_ATTR_LBT_MODE])
+		printf("%s\tlbt %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_LBT_MODE]));
+
+	return NL_SKIP;
+}
+
+static int handle_interface_info(struct nl802154_state *state,
+				 struct nl_cb *cb,
+				 struct nl_msg *msg,
+				 int argc, char **argv,
+				 enum id_input id)
+{
+	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_iface_handler, NULL);
+	return 0;
+}
+
+TOPLEVEL(info, NULL, NL802154_CMD_GET_INTERFACE, 0, CIB_NETDEV, handle_interface_info,
+	 "Show information for this interface.");
+
+static unsigned int dev_dump_wpan_phy;
+
+static int handle_dev_dump(struct nl802154_state *state,
+			   struct nl_cb *cb,
+			   struct nl_msg *msg,
+			   int argc, char **argv,
+			   enum id_input id)
+{
+	dev_dump_wpan_phy = -1;
+	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_iface_handler, &dev_dump_wpan_phy);
+	return 0;
+}
+TOPLEVEL(dev, NULL, NL802154_CMD_GET_INTERFACE, NLM_F_DUMP, CIB_NONE, handle_dev_dump,
+	 "List all network interfaces for wireless hardware.");
