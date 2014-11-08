@@ -79,8 +79,6 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	return 0;
 }
 
-static bool nl802154_has_split_wiphy = false;
-
 static int handle_info(struct nl802154_state *state,
 		       struct nl_cb *cb,
 		       struct nl_msg *msg,
@@ -88,13 +86,8 @@ static int handle_info(struct nl802154_state *state,
 		       enum id_input id)
 {
 	char *feat_args[] = { "features", "-q" };
-	int err;
 
-	err = handle_cmd(state, CIB_NONE, 2, feat_args);
-	if (!err && nl802154_has_split_wiphy) {
-		nla_put_flag(msg, NL802154_ATTR_SPLIT_WPAN_PHY_DUMP);
-		nlmsg_hdr(msg)->nlmsg_flags |= NLM_F_DUMP;
-	}
+	handle_cmd(state, CIB_NONE, 2, feat_args);
 
 	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_phy_handler, NULL);
 
