@@ -160,12 +160,12 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 		printf("%s\twpan_phy %d\n", indent, nla_get_u32(tb_msg[NL802154_ATTR_WPAN_PHY]));
 	if (tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES])
 		printf("%s\tmax_frame_retries %d\n", indent, nla_get_s8(tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES]));
+	if (tb_msg[NL802154_ATTR_MIN_BE])
+		printf("%s\tmin_be %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MIN_BE]));
 	if (tb_msg[NL802154_ATTR_MAX_BE])
 		printf("%s\tmax_be %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MAX_BE]));
 	if (tb_msg[NL802154_ATTR_MAX_CSMA_BACKOFFS])
 		printf("%s\tmax_csma_backoffs %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MAX_CSMA_BACKOFFS]));
-	if (tb_msg[NL802154_ATTR_MIN_BE])
-		printf("%s\tmin_be %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MIN_BE]));
 	if (tb_msg[NL802154_ATTR_LBT_MODE])
 		printf("%s\tlbt %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_LBT_MODE]));
 
@@ -181,7 +181,6 @@ static int handle_interface_info(struct nl802154_state *state,
 	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_iface_handler, NULL);
 	return 0;
 }
-
 TOPLEVEL(info, NULL, NL802154_CMD_GET_INTERFACE, 0, CIB_NETDEV, handle_interface_info,
 	 "Show information for this interface.");
 
