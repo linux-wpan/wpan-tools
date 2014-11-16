@@ -201,15 +201,15 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 	if (tb_msg[NL802154_ATTR_WPAN_DEV])
 		printf("%s\twpan_dev 0x%llx\n", indent,
 		       (unsigned long long)nla_get_u64(tb_msg[NL802154_ATTR_WPAN_DEV]));
-	/* TODO byteorder? */
 	if (tb_msg[NL802154_ATTR_EXTENDED_ADDR])
-		printf("%s\textended_addr 0x%016llx\n", indent, nla_get_u64(tb_msg[NL802154_ATTR_EXTENDED_ADDR]));
-	/* TODO byteorder? */
+		printf("%s\textended_addr 0x%016llx\n", indent,
+		       le64toh(nla_get_u64(tb_msg[NL802154_ATTR_EXTENDED_ADDR])));
 	if (tb_msg[NL802154_ATTR_SHORT_ADDR])
-		printf("%s\tshort_addr 0x%04x\n", indent, nla_get_u16(tb_msg[NL802154_ATTR_SHORT_ADDR]));
-	/* TODO byteorder? */
+		printf("%s\tshort_addr 0x%04x\n", indent,
+		       le16toh(nla_get_u16(tb_msg[NL802154_ATTR_SHORT_ADDR])));
 	if (tb_msg[NL802154_ATTR_PAN_ID])
-		printf("%s\tpan_id 0x%04x\n", indent, nla_get_u16(tb_msg[NL802154_ATTR_PAN_ID]));
+		printf("%s\tpan_id 0x%04x\n", indent,
+		       le16toh(nla_get_u16(tb_msg[NL802154_ATTR_PAN_ID])));
 	if (tb_msg[NL802154_ATTR_IFTYPE])
 		printf("%s\ttype %s\n", indent, iftype_name(nla_get_u32(tb_msg[NL802154_ATTR_IFTYPE])));
 	if (!wpan_phy && tb_msg[NL802154_ATTR_WPAN_PHY])

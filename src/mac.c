@@ -30,7 +30,7 @@ static int handle_pan_id_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
-	NLA_PUT_U16(msg, NL802154_ATTR_PAN_ID, pan_id);
+	NLA_PUT_U16(msg, NL802154_ATTR_PAN_ID, htole16(pan_id));
 
 	return 0;
 
@@ -57,7 +57,7 @@ static int handle_short_addr_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
-	NLA_PUT_U16(msg, NL802154_ATTR_SHORT_ADDR, short_addr);
+	NLA_PUT_U16(msg, NL802154_ATTR_SHORT_ADDR, htole16(short_addr));
 
 	return 0;
 
