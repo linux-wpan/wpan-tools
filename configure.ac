@@ -5,7 +5,6 @@ AC_INIT([Userspace tools for Linux IEEE 802.15.4 stack],
 AC_CONFIG_SRCDIR([src/iwpan.c])
 AC_CONFIG_AUX_DIR([build-aux])
 AM_INIT_AUTOMAKE([
-	check-news
 	foreign
 	1.11
 	-Wall
