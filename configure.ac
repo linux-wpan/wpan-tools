@@ -31,7 +31,7 @@ AC_PREFIX_DEFAULT([/usr])
 AC_PROG_SED
 AC_PROG_MKDIR_P
 
-PKG_CHECK_MODULES(LIBNL3, [libnl-3.0 >= 3.1 libnl-genl-3.0 >= 3.1], [have_libnl3=yes], [have_libnl3=no])
+PKG_CHECK_MODULES(LIBNL3, [libnl-3.0 >= 3.1 libnl-genl-3.0 >= 3.1])
 
 AC_CHECK_FUNCS([ \
 	__secure_getenv \
