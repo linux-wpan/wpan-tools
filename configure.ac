@@ -12,8 +12,7 @@ AM_INIT_AUTOMAKE([
 	-Wno-portability
 	silent-rules
 	tar-pax
-	no-dist-gzip
-	dist-xz
+	dist-bzip2
 	subdir-objects
 ])
 AC_PROG_CC_STDC
