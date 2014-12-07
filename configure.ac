@@ -37,7 +37,7 @@ AC_CHECK_FUNCS([ \
 	secure_getenv\
 ])
 
-my_CFLAGS="\
+WPAN_TOOLS_CFLAGS="\
 -Wall \
 -Wchar-subscripts \
 -Wformat-security \
