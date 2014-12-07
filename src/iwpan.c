@@ -17,6 +17,7 @@
 
 #include "nl802154.h"
 #include "iwpan.h"
+#include "config.h"
 
 /* TODO libnl 1.x compatibility code */
 
@@ -173,8 +174,7 @@ static void usage(int argc, char **argv)
 
 	printf("Usage:\t%s [options] command\n", argv0);
 	usage_options();
-	/* TODO */
-	printf("\t--version\tshow version (0.1)\n");
+	printf("\t--version\tshow version (" PACKAGE_VERSION ")\n");
 	printf("Commands:\n");
 	for_each_cmd(section) {
 		if (section->parent)
@@ -215,8 +215,7 @@ static void usage_cmd(const struct cmd *cmd)
 
 static void version(void)
 {
-	/* TODO */
-	printf("iwpan version 0.1\n");
+	printf("iwpan version " PACKAGE_VERSION "\n");
 }
 
 static int phy_lookup(char *name)
