@@ -20,7 +20,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	int64_t phy_id = -1;
 	bool print_name = true;
 	struct nlattr *nl_page;
-	unsigned long cca_mode;
+	enum nl802154_cca_modes cca_mode;
 
 	nla_parse(tb_msg, NL802154_ATTR_MAX, genlmsg_attrdata(gnlh, 0),
 		  genlmsg_attrlen(gnlh, 0), NULL);
@@ -62,13 +62,22 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 		printf("current_channel: %d\n", nla_get_u8(tb_msg[NL802154_ATTR_CHANNEL]));
 
 	if (tb_msg[NL802154_ATTR_CCA_MODE]) {
-		cca_mode = nla_get_u8(tb_msg[NL802154_ATTR_CCA_MODE]);
+		cca_mode = nla_get_u32(tb_msg[NL802154_ATTR_CCA_MODE]);
 		printf("cca_mode: %d", cca_mode);
-		if (cca_mode == 3) {
-			if (nla_get_u8(tb_msg[NL802154_ATTR_CCA_MODE3_AND]))
-				printf(" AND ");
-			else
-				printf(" OR ");
+		if (cca_mode == NL802154_CCA_ENERGY_CARRIER) {
+			enum nl802154_cca_opts cca_opt;
+
+			cca_opt = nla_get_u32(tb_msg[NL802154_ATTR_CCA_OPT]);
+			switch (cca_opt) {
+			case NL802154_CCA_OPT_ENERGY_CARRIER_AND:
+				printf(" logical and ");
+				break;
+			case NL802154_CCA_OPT_ENERGY_CARRIER_OR:
+				printf(" logical or ");
+				break;
+			default:
+				printf(" logical op mode unkown ");
+			}
 		}
 		printf("\n");
 	}

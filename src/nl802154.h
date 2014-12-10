@@ -1,25 +1,23 @@
+#ifndef __NL802154_H
+#define __NL802154_H
 /*
- * nl802154.h
+ * 802.15.4 netlink interface public header
  *
- * Copyright (C) 2007, 2008, 2009 Siemens AG
+ * Copyright 2014 Alexander Aring <aar@pengutronix.de>
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
+ * Permission to use, copy, modify, and/or distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along
- * with this program; if not, write to the Free Software Foundation, Inc.,
- * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
-
-#ifndef NL802154_H
-#define NL802154_H
 
 #define NL802154_GENL_NAME "nl802154"
 
@@ -84,7 +82,7 @@ enum nl802154_attrs {
 	NL802154_ATTR_TX_POWER,
 
 	NL802154_ATTR_CCA_MODE,
-	NL802154_ATTR_CCA_MODE3_AND,
+	NL802154_ATTR_CCA_OPT,
 	NL802154_ATTR_CCA_ED_LEVEL,
 
 	NL802154_ATTR_MAX_FRAME_RETRIES,
@@ -109,6 +107,7 @@ enum nl802154_attrs {
 };
 
 enum nl802154_iftype {
+	/* for backwards compatibility TODO */
 	NL802154_IFTYPE_UNSPEC = -1,
 
 	NL802154_IFTYPE_NODE,
@@ -120,4 +119,47 @@ enum nl802154_iftype {
 	NL802154_IFTYPE_MAX = NUM_NL802154_IFTYPES - 1
 };
 
-#endif /* NL802154_H */
+/**
+ * enum nl802154_cca_modes - cca modes
+ *
+ * @__NL802154_CCA_INVALID: cca mode number 0 is reserved
+ * @NL802154_CCA_ENERGY: Energy above threshold
+ * @NL802154_CCA_CARRIER: Carrier sense only
+ * @NL802154_CCA_ENERGY_CARRIER: Carrier sense with energy above threshold
+ * @NL802154_CCA_ALOHA: CCA shall always report an idle medium
+ * @NL802154_CCA_UWB_SHR: UWB preamble sense based on the SHR of a frame
+ * @NL802154_CCA_UWB_MULTIPEXED: UWB preamble sense based on the packet with
+ *	the multiplexed preamble
+ * @__NL802154_CCA_ATTR_AFTER_LAST: Internal
+ * @NL802154_CCA_ATTR_MAX: Maximum CCA attribute number
+ */
+enum nl802154_cca_modes {
+	__NL802154_CCA_INVALID,
+	NL802154_CCA_ENERGY,
+	NL802154_CCA_CARRIER,
+	NL802154_CCA_ENERGY_CARRIER,
+	NL802154_CCA_ALOHA,
+	NL802154_CCA_UWB_SHR,
+	NL802154_CCA_UWB_MULTIPEXED,
+
+	/* keep last */
+	__NL802154_CCA_ATTR_AFTER_LAST,
+	NL802154_CCA_ATTR_MAX = __NL802154_CCA_ATTR_AFTER_LAST - 1
+};
+
+/**
+ * enum nl802154_cca_opts - additional options for cca modes
+ *
+ * @NL802154_CCA_OPT_ENERGY_CARRIER_OR: NL802154_CCA_ENERGY_CARRIER with OR
+ * @NL802154_CCA_OPT_ENERGY_CARRIER_AND: NL802154_CCA_ENERGY_CARRIER with AND
+ */
+enum nl802154_cca_opts {
+	NL802154_CCA_OPT_ENERGY_CARRIER_AND,
+	NL802154_CCA_OPT_ENERGY_CARRIER_OR,
+
+	/* keep last */
+	__NL802154_CCA_OPT_ATTR_AFTER_LAST,
+	NL802154_CCA_OPT_ATTR_MAX = __NL802154_CCA_OPT_ATTR_AFTER_LAST - 1
+};
+
+#endif /* __NL802154_H */

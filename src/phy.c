@@ -80,7 +80,7 @@ static int handle_cca_mode_set(struct nl802154_state *state,
 			       int argc, char **argv,
 			       enum id_input id)
 {
-	unsigned long cca_mode, cca_mode3_and;
+	enum nl802154_cca_modes cca_mode;
 	char *end;
 
 	if (argc < 1)
@@ -91,19 +91,21 @@ static int handle_cca_mode_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
-	if (cca_mode == 3) {
+	if (cca_mode == NL802154_CCA_ENERGY_CARRIER) {
+		enum nl802154_cca_opts cca_opt;
+
 		if (argc < 2)
 			return 1;
 
-		/* CCA_MODE */
-		cca_mode3_and = strtoul(argv[1], &end, 10);
+		/* CCA_OPT */
+		cca_opt = strtoul(argv[1], &end, 10);
 		if (*end != '\0')
 			return 1;
 
-		NLA_PUT_U8(msg, NL802154_ATTR_CCA_MODE3_AND, cca_mode3_and);
+		NLA_PUT_U32(msg, NL802154_ATTR_CCA_OPT, cca_opt);
 	}
 
-	NLA_PUT_U8(msg, NL802154_ATTR_CCA_MODE, cca_mode);
+	NLA_PUT_U32(msg, NL802154_ATTR_CCA_MODE, cca_mode);
 
 	return 0;
 
