@@ -94,10 +94,6 @@ static int handle_info(struct nl802154_state *state,
 		       int argc, char **argv,
 		       enum id_input id)
 {
-	char *feat_args[] = { "features", "-q" };
-
-	handle_cmd(state, CIB_NONE, 2, feat_args);
-
 	nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_phy_handler, NULL);
 
 	return 0;
