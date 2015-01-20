@@ -212,8 +212,6 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 		       le16toh(nla_get_u16(tb_msg[NL802154_ATTR_PAN_ID])));
 	if (tb_msg[NL802154_ATTR_IFTYPE])
 		printf("%s\ttype %s\n", indent, iftype_name(nla_get_u32(tb_msg[NL802154_ATTR_IFTYPE])));
-	if (!wpan_phy && tb_msg[NL802154_ATTR_WPAN_PHY])
-		printf("%s\twpan_phy %d\n", indent, nla_get_u32(tb_msg[NL802154_ATTR_WPAN_PHY]));
 	if (tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES])
 		printf("%s\tmax_frame_retries %d\n", indent, nla_get_s8(tb_msg[NL802154_ATTR_MAX_FRAME_RETRIES]));
 	if (tb_msg[NL802154_ATTR_MIN_BE])
