@@ -118,4 +118,6 @@ int handle_cmd(struct nl802154_state *state, enum id_input idby,
 DECLARE_SECTION(set);
 DECLARE_SECTION(get);
 
+const char *iftype_name(enum nl802154_iftype iftype);
+
 #endif /* __IWPAN_H */
