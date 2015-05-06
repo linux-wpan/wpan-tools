@@ -107,6 +107,11 @@ struct cmd {
 #define DECLARE_SECTION(_name)						\
 	extern struct cmd __section ## _ ## _name;
 
+#define DBM_TO_MBM(gain)						\
+	((int)(((float)gain) * 100))
+#define MBM_TO_DBM(gain)						\
+	((float)(gain) / 100)
+
 int handle_cmd(struct nl802154_state *state, enum id_input idby,
 	       int argc, char **argv);
 

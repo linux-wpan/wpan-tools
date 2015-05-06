@@ -83,7 +83,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	}
 
 	if (tb_msg[NL802154_ATTR_TX_POWER])
-		printf("tx_power: %d\n", nla_get_s8(tb_msg[NL802154_ATTR_TX_POWER]));
+		printf("tx_power: %.2g\n", MBM_TO_DBM(nla_get_s32(tb_msg[NL802154_ATTR_TX_POWER])));
 
 	return 0;
 }

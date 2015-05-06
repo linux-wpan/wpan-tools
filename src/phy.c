@@ -64,7 +64,7 @@ static int handle_tx_power_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
-	NLA_PUT_S8(msg, NL802154_ATTR_TX_POWER, dbm);
+	NLA_PUT_S32(msg, NL802154_ATTR_TX_POWER, DBM_TO_MBM(dbm));
 
 	return 0;
 
@@ -132,7 +132,7 @@ static int handle_cca_ed_level(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
-	NLA_PUT_S32(msg, NL802154_ATTR_CCA_ED_LEVEL, level);
+	NLA_PUT_S32(msg, NL802154_ATTR_CCA_ED_LEVEL, DBM_TO_MBM(level));
 
 	return 0;
 

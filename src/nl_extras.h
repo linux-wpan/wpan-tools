@@ -28,6 +28,11 @@ static inline int8_t nla_get_s8(struct nlattr *nla)
 #define NLA_PUT_S32(n, attrtype, value) \
 	NLA_PUT_TYPE(n, int32_t, attrtype, value)
 
+static inline int32_t nla_get_s32(struct nlattr *nla)
+{
+	return *(int32_t *) nla_data(nla);
+}
+
 #endif /* NLA_S32 */
 
 #ifndef NLA_S64
