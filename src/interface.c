@@ -203,7 +203,7 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 		printf("%s\twpan_dev 0x%llx\n", indent,
 		       (unsigned long long)nla_get_u64(tb_msg[NL802154_ATTR_WPAN_DEV]));
 	if (tb_msg[NL802154_ATTR_EXTENDED_ADDR])
-		printf("%s\textended_addr 0x%016" PRIu64 "\n", indent,
+		printf("%s\textended_addr 0x%016" PRIx64 "\n", indent,
 		       le64toh(nla_get_u64(tb_msg[NL802154_ATTR_EXTENDED_ADDR])));
 	if (tb_msg[NL802154_ATTR_SHORT_ADDR])
 		printf("%s\tshort_addr 0x%04x\n", indent,
