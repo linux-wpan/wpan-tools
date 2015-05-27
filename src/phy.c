@@ -53,14 +53,14 @@ static int handle_tx_power_set(struct nl802154_state *state,
 			       int argc, char **argv,
 			       enum id_input id)
 {
-	long dbm;
+	float dbm;
 	char *end;
 
 	if (argc < 1)
 		return 1;
 
 	/* TX_POWER */
-	dbm = strtol(argv[0], &end, 10);
+	dbm = strtof(argv[0], &end);
 	if (*end != '\0')
 		return 1;
 
