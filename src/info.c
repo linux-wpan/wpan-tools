@@ -94,6 +94,9 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 		printf("\n");
 	}
 
+	if (tb_msg[NL802154_ATTR_CCA_ED_LEVEL])
+		printf("cca_ed_level: %.3g\n", MBM_TO_DBM(nla_get_s32(tb_msg[NL802154_ATTR_CCA_ED_LEVEL])));
+
 	if (tb_msg[NL802154_ATTR_TX_POWER])
 		printf("tx_power: %.3g\n", MBM_TO_DBM(nla_get_s32(tb_msg[NL802154_ATTR_TX_POWER])));
 
