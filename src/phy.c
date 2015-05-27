@@ -121,14 +121,14 @@ static int handle_cca_ed_level(struct nl802154_state *state,
 			       int argc, char **argv,
 			       enum id_input id)
 {
-	long level;
+	float level;
 	char *end;
 
 	if (argc < 1)
 		return 1;
 
 	/* CCA_ED_LEVEL */
-	level = strtol(argv[0], &end, 10);
+	level = strtof(argv[0], &end);
 	if (*end != '\0')
 		return 1;
 
