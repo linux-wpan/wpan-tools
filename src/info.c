@@ -95,7 +95,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	}
 
 	if (tb_msg[NL802154_ATTR_TX_POWER])
-		printf("tx_power: %.2g\n", MBM_TO_DBM(nla_get_s32(tb_msg[NL802154_ATTR_TX_POWER])));
+		printf("tx_power: %.3g\n", MBM_TO_DBM(nla_get_s32(tb_msg[NL802154_ATTR_TX_POWER])));
 
 	if (tb_msg[NL802154_ATTR_WPAN_PHY_CAPS]) {
 		struct nlattr *tb_caps[NL802154_CAP_ATTR_MAX + 1];
