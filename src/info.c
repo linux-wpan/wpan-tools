@@ -54,7 +54,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 				    rem_page) {
 			channel = nla_get_u32(nl_page);
 			if (channel) {
-				printf("\tpage %d: ", page, channel);
+				printf("\tpage %d: ", page);
 				for (i = 0; i <= 31; i++) {
 					if (channel & 0x1)
 						printf("%d,", i);
