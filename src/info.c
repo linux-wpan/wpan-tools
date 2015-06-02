@@ -23,6 +23,129 @@ static void print_minmax_handler(int min, int max)
 	printf("\b \n");
 }
 
+static void print_freq_handler(int channel_page, int channel)
+{
+	float freq = 0;
+
+	switch (channel_page) {
+	case 0:
+		if (channel == 0) {
+			freq = 868.3;
+			printf("%5.1f", freq);
+			break;
+		} else if (channel > 0 && channel < 11) {
+			freq = 906 + 2 * (channel - 1);
+		} else {
+			freq = 2405 + 5 * (channel - 11);
+		}
+		printf("%5.0f", freq);
+		break;
+	case 1:
+		if (channel == 0) {
+			freq = 868.3;
+			printf("%5.1f", freq);
+			break;
+		} else if (channel >= 1 && channel <= 10) {
+			freq = 906 + 2 * (channel - 1);
+		}
+		printf("%5.0f", freq);
+		break;
+	case 2:
+		if (channel == 0) {
+			freq = 868.3;
+			printf("%5.1f", freq);
+			break;
+		} else if (channel >= 1 && channel <= 10) {
+			freq = 906 + 2 * (channel - 1);
+		}
+		printf("%5.0f", freq);
+		break;
+	case 3:
+		if (channel >= 0 && channel <= 12) {
+			freq = 2412 + 5 * channel;
+		} else if (channel == 13) {
+			freq = 2484;
+		}
+		printf("%4.0f", freq);
+		break;
+	case 4:
+		switch (channel) {
+		case 0:
+			freq = 499.2;
+			break;
+		case 1:
+			freq = 3494.4;
+			break;
+		case 2:
+			freq = 3993.6;
+			break;
+		case 3:
+			freq = 4492.8;
+			break;
+		case 4:
+			freq = 3993.6;
+			break;
+		case 5:
+			freq = 6489.6;
+			break;
+		case 6:
+			freq = 6988.8;
+			break;
+		case 7:
+			freq = 6489.6;
+			break;
+		case 8:
+			freq = 7488.0;
+			break;
+		case 9:
+			freq = 7987.2;
+			break;
+		case 10:
+			freq = 8486.4;
+			break;
+		case 11:
+			freq = 7987.2;
+			break;
+		case 12:
+			freq = 8985.6;
+			break;
+		case 13:
+			freq = 9484.8;
+			break;
+		case 14:
+			freq = 9984.0;
+			break;
+		case 15:
+			freq = 9484.8;
+			break;
+		}
+		printf("%6.1f", freq);
+		break;
+	case 5:
+		if (channel >= 0 && channel <= 3) {
+			freq = 780 + 2 * channel;
+		} else if (channel >= 4 && channel <= 7) {
+			freq = 780 + 2 * (channel - 4);
+		}
+		printf("%3.0f", freq);
+		break;
+	case 6:
+		if (channel >= 0 && channel <= 7) {
+			freq = 951.2 + 0.6 * channel;
+		} else if (channel >= 8 && channel <= 9) {
+			freq = 954.4 + 0.2 * (channel - 8);
+		} else if (channel >= 10  && channel <= 21) {
+			freq = 951.1 + 0.4 * (channel - 10);
+		}
+
+		printf("%5.1f", freq);
+		break;
+	default:
+		printf("Unknown");
+		break;
+	}
+}
+
 static int print_phy_handler(struct nl_msg *msg, void *arg)
 {
 	struct nlattr *tb_msg[NL802154_ATTR_MAX + 1];
@@ -145,6 +268,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 		}
 
 		if (tb_msg[NL802154_CAP_ATTR_CHANNELS]) {
+			int counter = 0;
 			int rem_pages;
 			struct nlattr *nl_pages;
 			printf("\tchannels:\n");
@@ -152,11 +276,22 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 					    rem_pages) {
 				int rem_channels;
 				struct nlattr *nl_channels;
+				counter = 0;
 				printf("\t\tpage %d: ", nla_type(nl_pages));
-				nla_for_each_nested(nl_channels, nl_pages, rem_channels)
-					printf("%d,", nla_type(nl_channels));
+				nla_for_each_nested(nl_channels, nl_pages, rem_channels) {
+					if (counter % 3 == 0) {
+						printf("\n\t\t\t[%2d] ", nla_type(nl_channels));
+						print_freq_handler(nla_type(nl_pages), nla_type(nl_channels));
+						printf(" MHz, ");
+					} else {
+						printf("[%2d] ", nla_type(nl_channels));
+						print_freq_handler(nla_type(nl_pages), nla_type(nl_channels));
+						printf(" MHz, ");
+					}
+					counter++;
+				}
 				/*  TODO hack use sprintf here */
-				printf("\b \b\n");
+				printf("\b\b \b\n");
 			}
 		}
 
