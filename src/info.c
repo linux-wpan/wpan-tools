@@ -146,6 +146,39 @@ static void print_freq_handler(int channel_page, int channel)
 	}
 }
 
+static const char *commands[NL802154_CMD_MAX + 1] = {
+	[NL802154_CMD_UNSPEC] = "unspec",
+	[NL802154_CMD_GET_WPAN_PHY] = "get_wpan_phy",
+	[NL802154_CMD_SET_WPAN_PHY] = "set_wpan_phy",
+	[NL802154_CMD_NEW_WPAN_PHY] = "new_wpan_phy",
+	[NL802154_CMD_DEL_WPAN_PHY] = "del_wpan_phy",
+	[NL802154_CMD_GET_INTERFACE] = "get_interface",
+	[NL802154_CMD_SET_INTERFACE] = "set_interface",
+	[NL802154_CMD_NEW_INTERFACE] = "new_interface",
+	[NL802154_CMD_DEL_INTERFACE] = "del_interface",
+	[NL802154_CMD_SET_CHANNEL] = "set_channel",
+	[NL802154_CMD_SET_PAN_ID] = "set_pan_id",
+	[NL802154_CMD_SET_SHORT_ADDR] = "set_short_addr",
+	[NL802154_CMD_SET_TX_POWER] = "set_tx_power",
+	[NL802154_CMD_SET_CCA_MODE] = "set_cca_mode",
+	[NL802154_CMD_SET_CCA_ED_LEVEL] = "set_cca_ed_level",
+	[NL802154_CMD_SET_MAX_FRAME_RETRIES] = "set_max_frame_retries",
+	[NL802154_CMD_SET_BACKOFF_EXPONENT] = "set_backoff_exponent",
+	[NL802154_CMD_SET_MAX_CSMA_BACKOFFS] = "set_max_csma_backoffs",
+	[NL802154_CMD_SET_LBT_MODE] = "set_lbt_mode",
+};
+
+static char cmdbuf[100];
+
+const char *command_name(enum nl802154_commands cmd)
+{
+	if (cmd <= NL802154_CMD_MAX && commands[cmd])
+		return commands[cmd];
+
+	sprintf(cmdbuf, "Unknown command (%d)", cmd);
+	return cmdbuf;
+}
+
 static int print_phy_handler(struct nl_msg *msg, void *arg)
 {
 	struct nlattr *tb_msg[NL802154_ATTR_MAX + 1];
@@ -395,6 +428,15 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 				break;
 			}
 		}
+	}
+
+	if (tb_msg[NL802154_ATTR_SUPPORTED_COMMANDS]) {
+		struct nlattr *nl_cmd;
+		int rem_cmd;
+
+		printf("Supported commands:\n");
+		nla_for_each_nested(nl_cmd, tb_msg[NL802154_ATTR_SUPPORTED_COMMANDS], rem_cmd)
+			printf("\t* %s\n", command_name(nla_get_u32(nl_cmd)));
 	}
 
 	return 0;
