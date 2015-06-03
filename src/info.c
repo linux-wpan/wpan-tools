@@ -226,8 +226,13 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	if (tb_msg[NL802154_ATTR_PAGE])
 		printf("current_page: %d\n", nla_get_u8(tb_msg[NL802154_ATTR_PAGE]));
 
-	if (tb_msg[NL802154_ATTR_CHANNEL])
-		printf("current_channel: %d\n", nla_get_u8(tb_msg[NL802154_ATTR_CHANNEL]));
+	if (tb_msg[NL802154_ATTR_CHANNEL] &&
+	    tb_msg[NL802154_ATTR_PAGE]) {
+		printf("current_channel: %d, ", nla_get_u8(tb_msg[NL802154_ATTR_CHANNEL]));
+		print_freq_handler(nla_get_u8(tb_msg[NL802154_ATTR_PAGE]),
+				   nla_get_u8(tb_msg[NL802154_ATTR_CHANNEL]));
+		printf(" MHz\n");
+	}
 
 	if (tb_msg[NL802154_ATTR_CCA_MODE]) {
 		cca_mode = nla_get_u32(tb_msg[NL802154_ATTR_CCA_MODE]);
