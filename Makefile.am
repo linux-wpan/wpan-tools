@@ -20,4 +20,5 @@ AM_LDFLAGS = \
 	-Wl,--as-needed
 
 SUBDIRS = \
-	src
+	src \
+	wpan-ping
