@@ -16,7 +16,7 @@
 
 SECTION(interface);
 
-static char modebuf[100];
+static char iftypebuf[100];
 
 const char *iftype_name(enum nl802154_iftype iftype)
 {
@@ -28,8 +28,8 @@ const char *iftype_name(enum nl802154_iftype iftype)
 	case NL802154_IFTYPE_COORD:
 		return "coordinator";
 	default:
-		sprintf(modebuf, "Unknown mode (%d)", iftype);
-		return modebuf;
+		sprintf(iftypebuf, "Invalid iftype (%d)", iftype);
+		return iftypebuf;
 	}
 }
 
