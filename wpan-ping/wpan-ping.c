@@ -43,8 +43,10 @@
 #include "../src/nl802154.h"
 
 #define MIN_PAYLOAD_LEN 5
-#define MAX_PAYLOAD_LEN 115
+#define MAX_PAYLOAD_LEN 116
 #define IEEE802154_ADDR_LEN 8
+/* Set the dispatch header to not 6lowpan for compat */
+#define NOT_A_6LOWPAN_FRAME 0x00
 
 enum {
 	IEEE802154_ADDR_NONE = 0x0,
@@ -194,10 +196,11 @@ static void dump_packet(unsigned char *buf, int len) {
 static int generate_packet(unsigned char *buf, struct config *conf, unsigned int seq_num) {
 	int i;
 
-	buf[0] = conf->packet_len;
-	buf[1] = seq_num >> 8; /* Upper byte */
-	buf[2] = seq_num & 0xFF; /* Lower byte */
-	for (i = 3; i < conf->packet_len; i++) {
+	buf[0] = NOT_A_6LOWPAN_FRAME;
+	buf[1] = conf->packet_len;
+	buf[2] = seq_num >> 8; /* Upper byte */
+	buf[3] = seq_num & 0xFF; /* Lower byte */
+	for (i = 4; i < conf->packet_len; i++) {
 		buf[i] = 0xAB;
 	}
 
@@ -228,11 +231,11 @@ static int measure_roundtrip(struct config *conf, int sd) {
 	count = 0;
 	for (i = 0; i < conf->packets; i++) {
 		generate_packet(buf, conf, i);
-		seq_num = (buf[1] << 8)| buf[2];
+		seq_num = (buf[2] << 8)| buf[3];
 		send(sd, buf, conf->packet_len, 0);
 		gettimeofday(&start_time, NULL);
 		ret = recv(sd, buf, conf->packet_len, 0);
-		if (seq_num != ((buf[1] << 8)| buf[2])) {
+		if (seq_num != ((buf[2] << 8)| buf[3])) {
 			printf("Sequenze number did not match\n");
 			continue;
 		}
