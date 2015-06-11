@@ -146,6 +146,52 @@ static void print_freq_handler(int channel_page, int channel)
 	}
 }
 
+static char cca_mode_buf[100];
+
+const char *print_cca_mode_handler(enum nl802154_cca_modes cca_mode,
+				   enum nl802154_cca_opts cca_opt)
+{
+	switch (cca_mode) {
+	case NL802154_CCA_ENERGY:
+		sprintf(cca_mode_buf,"(%d) %s", cca_mode, "Energy above threshold");
+		break;
+	case NL802154_CCA_CARRIER:
+		sprintf(cca_mode_buf,"(%d) %s", cca_mode, "Carrier sense only");
+		break;
+	case NL802154_CCA_ENERGY_CARRIER:
+		switch (cca_opt) {
+		case NL802154_CCA_OPT_ENERGY_CARRIER_AND:
+			sprintf(cca_mode_buf, "(%d, cca_opt: %d) %s", cca_mode, cca_opt,
+				"Carrier sense with energy above threshold (logical operator is 'and')");
+			break;
+		case NL802154_CCA_OPT_ENERGY_CARRIER_OR:
+			sprintf(cca_mode_buf, "(%d, cca_opt: %d) %s", cca_mode, cca_opt,
+				"Carrier sense with energy above threshold (logical operator is 'or')");
+			break;
+		default:
+			sprintf(cca_mode_buf, "Unknown CCA option (%d) for CCA mode (%d)",
+				cca_opt, cca_mode);
+			break;
+		}
+		break;
+	case NL802154_CCA_ALOHA:
+		sprintf(cca_mode_buf,"(%d) %s", cca_mode, "ALOHA");
+		break;
+	case NL802154_CCA_UWB_SHR:
+		sprintf(cca_mode_buf,"(%d) %s", cca_mode,
+			"UWB preamble sense based on the SHR of a frame");
+		break;
+	case NL802154_CCA_UWB_MULTIPLEXED:
+		sprintf(cca_mode_buf,"(%d) %s", cca_mode,
+			"UWB preamble sense based on the packet with the multiplexed preamble");
+		break;
+	default:
+		sprintf(cca_mode_buf, "Unknown CCA mode (%d)", cca_mode);
+		break;
+	}
+	return cca_mode_buf;
+}
+
 static const char *commands[NL802154_CMD_MAX + 1] = {
 	[NL802154_CMD_UNSPEC] = "unspec",
 	[NL802154_CMD_GET_WPAN_PHY] = "get_wpan_phy",
@@ -235,23 +281,13 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 	}
 
 	if (tb_msg[NL802154_ATTR_CCA_MODE]) {
-		cca_mode = nla_get_u32(tb_msg[NL802154_ATTR_CCA_MODE]);
-		printf("cca_mode: %d", cca_mode);
-		if (cca_mode == NL802154_CCA_ENERGY_CARRIER) {
-			enum nl802154_cca_opts cca_opt;
-
+		enum nl802154_cca_opts cca_opt = NL802154_CCA_OPT_ATTR_MAX;
+		if (tb_msg[NL802154_ATTR_CCA_OPT])
 			cca_opt = nla_get_u32(tb_msg[NL802154_ATTR_CCA_OPT]);
-			switch (cca_opt) {
-			case NL802154_CCA_OPT_ENERGY_CARRIER_AND:
-				printf(" logical and ");
-				break;
-			case NL802154_CCA_OPT_ENERGY_CARRIER_OR:
-				printf(" logical or ");
-				break;
-			default:
-				printf(" logical op mode unkown ");
-			}
-		}
+
+		cca_mode = nla_get_u32(tb_msg[NL802154_ATTR_CCA_MODE]);
+
+		printf("cca_mode: %s", print_cca_mode_handler(cca_mode, cca_opt));
 		printf("\n");
 	}
 
@@ -361,33 +397,34 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 			printf("\tcca_modes: ");
 			nla_for_each_nested(nl_cca_modes,
 					    tb_caps[NL802154_CAP_ATTR_CCA_MODES],
-					    rem_cca_modes)
-				printf("%d,", nla_type(nl_cca_modes));
-			/* TODO */
-			printf("\b \n");
-		}
+					    rem_cca_modes) {
+				/* Loop through all CCA options only if it is a
+				 * CCA mode that takes CCA options into
+				 * consideration.
+				 */
+				if (tb_caps[NL802154_CAP_ATTR_CCA_OPTS] &&
+				    nla_type(nl_cca_modes) == NL802154_CCA_ENERGY_CARRIER) {
+					struct nlattr *nl_cca_opts;
+					int rem_cca_opts;
 
-		if (tb_caps[NL802154_CAP_ATTR_CCA_OPTS]) {
-			struct nlattr *nl_cca_opts;
-			int rem_cca_opts;
+					nla_for_each_nested(nl_cca_opts,
+								tb_caps[NL802154_CAP_ATTR_CCA_OPTS],
+								rem_cca_opts) {
+						printf("\n\t\t%s",
+							print_cca_mode_handler(
+								nla_type(nl_cca_modes),
+								nla_type(nl_cca_opts)));
+					}
+				} else {
+					printf("\n\t\t%s",
+						print_cca_mode_handler(
+							nla_type(nl_cca_modes),
+							NL802154_CCA_OPT_ATTR_MAX));
 
-			printf("\tcca_opts: ");
-			nla_for_each_nested(nl_cca_opts,
-					    tb_caps[NL802154_CAP_ATTR_CCA_OPTS],
-					    rem_cca_opts) {
-				printf("%d", nla_type(nl_cca_opts));
-				switch (nla_type(nl_cca_opts)) {
-				case NL802154_CCA_OPT_ENERGY_CARRIER_AND:
-				case NL802154_CCA_OPT_ENERGY_CARRIER_OR:
-					printf("(cca_mode: 3),");
-					break;
-				default:
-					printf("unkown\n");
-					break;
 				}
 			}
 			/* TODO */
-			printf("\b \n");
+			printf("\n");
 		}
 
 		if (tb_caps[NL802154_CAP_ATTR_MIN_MINBE] &&
