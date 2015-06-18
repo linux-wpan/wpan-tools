@@ -248,9 +248,9 @@ static int measure_roundtrip(struct config *conf, int sd) {
 			conf->dst_addr, conf->pan_id, conf->packet_len);
 	buf = (unsigned char *)malloc(MAX_PAYLOAD_LEN);
 
-	/* 2 seconds packet receive timeout */
-	timeout.tv_sec = 2;
-	timeout.tv_usec = 0;
+	/* 500ms seconds packet receive timeout */
+	timeout.tv_sec = 0;
+	timeout.tv_usec = 500000;
 	setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&timeout,sizeof(struct timeval));
 
 	count = 0;
@@ -295,7 +295,7 @@ static int measure_roundtrip(struct config *conf, int sd) {
 				fprintf(stdout, "%i bytes from 0x%04x seq=%i time=%.1f ms\n", ret,
 					conf->dst_addr, (int)seq_num, (float)usec/1000);
 		} else
-			fprintf(stderr, "Hit 2s packet timeout\n");
+			fprintf(stderr, "Hit 500 ms packet timeout\n");
 	}
 
 	if (count)
