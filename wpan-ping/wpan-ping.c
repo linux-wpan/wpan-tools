@@ -43,7 +43,7 @@
 #include "../src/nl802154.h"
 
 #define MIN_PAYLOAD_LEN 5
-#define MAX_PAYLOAD_LEN 116
+#define MAX_PAYLOAD_LEN 105 //116 with short address
 #define IEEE802154_ADDR_LEN 8
 /* Set the dispatch header to not 6lowpan for compat */
 #define NOT_A_6LOWPAN_FRAME 0x00
