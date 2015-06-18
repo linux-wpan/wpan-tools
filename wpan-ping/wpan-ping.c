@@ -92,7 +92,7 @@ struct config {
 	uint8_t dst_extended[IEEE802154_ADDR_LEN];
 	uint8_t src_extended[IEEE802154_ADDR_LEN];
 	bool extended;
-	char server;
+	bool server;
 	char *interface;
 	struct nl_sock *nl_sock;
 	int nl802154_id;
@@ -467,7 +467,7 @@ int main(int argc, char *argv[]) {
 			conf->extended = true;
 			break;
 		case 'd':
-			conf->server = 1;
+			conf->server = true;
 			address = optarg;
 			break;
 		case 'c':
