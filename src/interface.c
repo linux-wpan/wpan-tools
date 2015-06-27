@@ -10,6 +10,7 @@
 #include <netlink/msg.h>
 #include <netlink/attr.h>
 
+#define CONFIG_IEEE802154_NL802154_EXPERIMENTAL
 #include "nl802154.h"
 #include "nl_extras.h"
 #include "iwpan.h"
@@ -225,6 +226,105 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 		printf("%s\tlbt %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_LBT_MODE]));
 	if (tb_msg[NL802154_ATTR_ACKREQ_DEFAULT])
 		printf("%s\tackreq_default %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_ACKREQ_DEFAULT]));
+
+	if (tb_msg[NL802154_ATTR_SEC_ENABLED])
+		printf("%s\tsecurity %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_SEC_ENABLED]));
+	if (tb_msg[NL802154_ATTR_SEC_OUT_LEVEL])
+		printf("%s\tout_level %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_SEC_OUT_LEVEL]));
+	if (tb_msg[NL802154_ATTR_SEC_OUT_KEY_ID]) {
+		struct nlattr *tb_key_id[NL802154_KEY_ID_ATTR_MAX + 1];
+		static struct nla_policy key_id_policy[NL802154_KEY_ID_ATTR_MAX + 1] = {
+		        [NL802154_KEY_ID_ATTR_MODE] = { .type = NLA_U32 },
+		        [NL802154_KEY_ID_ATTR_INDEX] = { .type = NLA_U8 },
+		        [NL802154_KEY_ID_ATTR_IMPLICIT] = { .type = NLA_NESTED },
+		        [NL802154_KEY_ID_ATTR_SOURCE_SHORT] = { .type = NLA_U32 },
+		        [NL802154_KEY_ID_ATTR_SOURCE_EXTENDED] = { .type = NLA_U64 },
+		};
+
+		nla_parse_nested(tb_key_id, NL802154_KEY_ID_ATTR_MAX,
+				 tb_msg[NL802154_ATTR_SEC_OUT_KEY_ID], key_id_policy);
+		printf("%s\tout_key_id\n", indent);
+
+		if (tb_key_id[NL802154_KEY_ID_ATTR_MODE]) {
+			enum nl802154_key_id_modes key_id_mode;
+
+			key_id_mode = nla_get_u32(tb_key_id[NL802154_KEY_ID_ATTR_MODE]);
+			switch (key_id_mode) {
+			case NL802154_KEY_ID_MODE_IMPLICIT:
+				printf("%s\t\tmode implicit\n", indent);
+				if (tb_key_id[NL802154_KEY_ID_ATTR_IMPLICIT]) {
+					struct nlattr *tb_dev_addr[NL802154_DEV_ADDR_ATTR_MAX + 1];
+					static struct nla_policy dev_addr_policy[NL802154_DEV_ADDR_ATTR_MAX + 1] = {
+						[NL802154_DEV_ADDR_ATTR_PAN_ID] = { .type = NLA_U16 },
+						[NL802154_DEV_ADDR_ATTR_MODE] = { .type = NLA_U32 },
+						[NL802154_DEV_ADDR_ATTR_SHORT] = { .type = NLA_U16 },
+						[NL802154_DEV_ADDR_ATTR_EXTENDED] = { .type = NLA_U64 },
+					};
+
+					nla_parse_nested(tb_dev_addr, NL802154_DEV_ADDR_ATTR_MAX,
+							 tb_key_id[NL802154_KEY_ID_ATTR_IMPLICIT],
+							 dev_addr_policy);
+
+					if (tb_dev_addr[NL802154_DEV_ADDR_ATTR_PAN_ID])
+						printf("%s\t\tpan_id 0x%04x\n", indent,
+						       le16toh(nla_get_u16(tb_dev_addr[NL802154_DEV_ADDR_ATTR_PAN_ID])));
+
+					if (tb_dev_addr[NL802154_DEV_ADDR_ATTR_MODE]) {
+						enum nl802154_dev_addr_modes dev_addr_mode;
+						dev_addr_mode = nla_get_u32(tb_dev_addr[NL802154_DEV_ADDR_ATTR_MODE]);
+						printf("%s\t\taddr_mode %d\n", indent, dev_addr_mode);
+						switch (dev_addr_mode) {
+						case NL802154_DEV_ADDR_SHORT:
+							if (tb_dev_addr[NL802154_DEV_ADDR_ATTR_SHORT])
+								printf("%s\t\tshort_addr 0x%04x\n", indent,
+								       le16toh(nla_get_u16(tb_dev_addr[NL802154_DEV_ADDR_ATTR_SHORT])));
+							break;
+						case NL802154_DEV_ADDR_EXTENDED:
+							if (tb_dev_addr[NL802154_DEV_ADDR_ATTR_EXTENDED])
+								printf("%s\t\textended_addr 0x%016" PRIx64 "\n", indent,
+								       le64toh(nla_get_u64(tb_dev_addr[NL802154_DEV_ADDR_ATTR_EXTENDED])));
+							break;
+						default:
+							printf("%s\t\tunkown address\n", indent);
+							break;
+						}
+					}
+				}
+				break;
+			case NL802154_KEY_ID_MODE_INDEX:
+				printf("%s\t\tmode index\n", indent);
+				if (tb_key_id[NL802154_KEY_ID_ATTR_INDEX])
+					printf("%s\t\tindex 0x%02x\n", indent,
+					       nla_get_u8(tb_key_id[NL802154_KEY_ID_ATTR_INDEX]));
+				break;
+			case NL802154_KEY_ID_MODE_INDEX_SHORT:
+				printf("%s\t\tmode index_short\n", indent);
+				if (tb_key_id[NL802154_KEY_ID_ATTR_INDEX])
+					printf("%s\t\tindex 0x%02x\n", indent,
+					       nla_get_u8(tb_key_id[NL802154_KEY_ID_ATTR_INDEX]));
+
+				if (tb_key_id[NL802154_KEY_ID_ATTR_SOURCE_SHORT])
+					printf("%s\t\tsource_short 0x%08lx\n", indent,
+					       le32toh(nla_get_u32(tb_key_id[NL802154_KEY_ID_ATTR_SOURCE_SHORT])));
+				break;
+			case NL802154_KEY_ID_MODE_INDEX_EXTENDED:
+				printf("%s\t\tmode index_extended\n", indent);
+				if (tb_key_id[NL802154_KEY_ID_ATTR_INDEX])
+					printf("%s\t\tindex 0x%02x\n", indent,
+					       nla_get_u8(tb_key_id[NL802154_KEY_ID_ATTR_INDEX]));
+
+				if (tb_key_id[NL802154_KEY_ID_ATTR_SOURCE_EXTENDED])
+					printf("%s\t\tsource_extended 0x%" PRIx64 "\n", indent,
+					       le64toh(nla_get_u64(tb_key_id[NL802154_KEY_ID_ATTR_SOURCE_EXTENDED])));
+				break;
+			default:
+				printf("%s\t\tkey_mode unknown\n", indent);
+			}
+		}
+	}
+
+	if (tb_msg[NL802154_ATTR_SEC_FRAME_COUNTER])
+		printf("%s\tframe_counter 0x%08lx\n", indent, be32toh(nla_get_u32(tb_msg[NL802154_ATTR_SEC_FRAME_COUNTER])));
 
 	return NL_SKIP;
 }
