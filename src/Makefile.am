@@ -9,6 +9,7 @@ iwpan_SOURCES = \
 	interface.c \
 	phy.c \
 	mac.c \
+	security.c \
 	nl_extras.h \
 	nl802154.h
 
