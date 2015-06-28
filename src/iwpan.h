@@ -54,16 +54,10 @@ struct cmd {
 	const struct cmd *parent;
 };
 
-#ifdef __APPLE__
-#define __SECTION(x) __attribute__ (( section( "__TEXT," #x ) ))
-#else
-#define __SECTION(x) __attribute__ (( section( #x ) ))
-#endif
-
 #define __COMMAND(_section, _symname, _name, _args, _nlcmd, _flags, _hidden, _idby, _handler, _help, _sel)\
 	static struct cmd						\
 	__cmd ## _ ## _symname ## _ ## _handler ## _ ## _nlcmd ## _ ## _idby ## _ ## _hidden\
-	__attribute__((used)) __SECTION(__cmd)	= {	\
+	__attribute__((used)) __attribute__((section("__cmd")))	= {	\
 		.name = (_name),					\
 		.args = (_args),					\
 		.cmd = (_nlcmd),					\
@@ -87,7 +81,7 @@ struct cmd {
 #define TOPLEVEL(_name, _args, _nlcmd, _flags, _idby, _handler, _help)	\
 	struct cmd							\
 	__section ## _ ## _name						\
-	__attribute__((used)) 	= {	\
+	__attribute__((used)) __attribute__((section("__cmd")))	= {	\
 		.name = (#_name),					\
 		.args = (_args),					\
 		.cmd = (_nlcmd),					\
@@ -96,10 +90,16 @@ struct cmd {
 		.handler = (_handler),					\
 		.help = (_help),					\
 	 }
+#define SECTION(_name)							\
+	struct cmd __section ## _ ## _name				\
+	__attribute__((used)) __attribute__((section("__cmd"))) = {	\
+		.name = (#_name),					\
+		.hidden = 1,						\
+	}
 
 #define SECTION(_name)							\
 	struct cmd __section ## _ ## _name				\
-	__attribute__((used)) __SECTION( __cmd ) = {	\
+	__attribute__((used)) __attribute__((section("__cmd"))) = {	\
 		.name = (#_name),					\
 		.hidden = 1,						\
 	}
