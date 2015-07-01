@@ -62,8 +62,17 @@ static void nl802154_cleanup(struct nl802154_state *state)
 
 static int cmd_size;
 
+#ifdef __APPLE__
+
+static struct cmd *__start___cmd;
+static struct cmd *__stop___cmd;
+
+#else
+
 extern struct cmd __start___cmd;
 extern struct cmd __stop___cmd;
+
+#endif
 
 static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 {
@@ -147,9 +156,19 @@ static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 	printf("\n");
 }
 
+#ifdef __APPLE__
+
+#define for_each_cmd(_cmd)                      \
+    for (_cmd = __start___cmd; _cmd < __stop___cmd;       \
+         _cmd = (const struct cmd *)((char *)_cmd + cmd_size))
+
+#else
+
 #define for_each_cmd(_cmd)						\
 	for (_cmd = &__start___cmd; _cmd < &__stop___cmd;		\
 	     _cmd = (const struct cmd *)((char *)_cmd + cmd_size))
+
+#endif
 
 static void usage_options(void)
 {
@@ -526,9 +545,23 @@ int main(int argc, char **argv)
 		else
 			usage(0, NULL);
 	} else if (err < 0)
-		fprintf(stderr, "command failed: %s (%d)\n", strerror(-err), err);
+		fprintf(stderr, "command failed: %s     (%d)\n", strerror(-err), err);
 
 	nl802154_cleanup(&nlstate);
 
 	return err;
 }
+
+#ifdef __APPLE__
+
+#include <mach-o/getsect.h>
+
+static void _init() __attribute__ (( constructor ));
+static void _init() {
+    struct section_64 *sect = (struct section_64 *) getsectbyname( "__TEXT", "__cmd" );
+    if ( NULL != sect ) {
+        __start___cmd = (struct cmd *) sect->addr;
+        __stop___cmd = (struct cmd *) sect->addr + sect->size;
+    }
+}
+#endif
