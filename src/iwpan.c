@@ -552,7 +552,7 @@ int main(int argc, char **argv)
 	return err;
 }
 
-#ifdef __APPLE__
+#ifdef __APPLE__ && defined __MACH__
 
 #include <mach-o/getsect.h>
 
