@@ -545,7 +545,7 @@ int main(int argc, char **argv)
 		else
 			usage(0, NULL);
 	} else if (err < 0)
-		fprintf(stderr, "command failed: %s     (%d)\n", strerror(-err), err);
+		fprintf(stderr, "command failed: %s (%d)\n", strerror(-err), err);
 
 	nl802154_cleanup(&nlstate);
 
@@ -556,12 +556,18 @@ int main(int argc, char **argv)
 
 #include <mach-o/getsect.h>
 
+#if defined __ppc64__ || defined __x86_64__
+#define MACH_O_SECTION struct section_64
+#else
+#define MACH_O_SECTION struct section
+#endif
+
 static void _init() __attribute__ (( constructor ));
 static void _init() {
-    struct section_64 *sect = (struct section_64 *) getsectbyname( "__TEXT", "__cmd" );
+    MACH_O_SECTION *sect = (MACH_O_SECTION *) getsectbyname( "__TEXT", "__cmd" );
     if ( NULL != sect ) {
         __start___cmd = (struct cmd *) sect->addr;
-        __stop___cmd = (struct cmd *) sect->addr + sect->size;
+        __stop___cmd = (struct cmd *) ( sect->addr + sect->size );
     }
 }
 #endif
