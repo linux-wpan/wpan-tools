@@ -156,7 +156,7 @@ static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 	printf("\n");
 }
 
-#ifdef __APPLE__ && defined __MACH__
+#if defined __APPLE__ && defined __MACH__
 
 #define for_each_cmd(_cmd)                      \
     for (_cmd = __start___cmd; _cmd < __stop___cmd;       \
