@@ -62,7 +62,7 @@ static void nl802154_cleanup(struct nl802154_state *state)
 
 static int cmd_size;
 
-#ifdef __APPLE__
+#if defined __APPLE__ && defined __MACH__
 
 static struct cmd *__start___cmd;
 static struct cmd *__stop___cmd;
@@ -156,7 +156,7 @@ static void __usage_cmd(const struct cmd *cmd, char *indent, bool full)
 	printf("\n");
 }
 
-#ifdef __APPLE__
+#ifdef __APPLE__ && defined __MACH__
 
 #define for_each_cmd(_cmd)                      \
     for (_cmd = __start___cmd; _cmd < __stop___cmd;       \
@@ -552,7 +552,7 @@ int main(int argc, char **argv)
 	return err;
 }
 
-#ifdef __APPLE__ && defined __MACH__
+#if defined __APPLE__ && defined __MACH__
 
 #include <mach-o/getsect.h>
 
@@ -562,8 +562,8 @@ int main(int argc, char **argv)
 #define MACH_O_SECTION struct section
 #endif
 
-static void _init() __attribute__ (( constructor ));
-static void _init() {
+static void mach_o_init() __attribute__ (( constructor ));
+static void mach_o_init() {
     MACH_O_SECTION *sect = (MACH_O_SECTION *) getsectbyname( "__TEXT", "__cmd" );
     if ( NULL != sect ) {
         __start___cmd = (struct cmd *) sect->addr;

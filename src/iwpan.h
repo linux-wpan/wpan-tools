@@ -54,7 +54,7 @@ struct cmd {
 	const struct cmd *parent;
 };
 
-#ifdef __APPLE__
+#if defined __APPLE__ && defined __MACH____
 #define __SECTION(x) __attribute__ (( section( "__TEXT," #x ) ))
 #else
 #define __SECTION(x) __attribute__ (( section( #x ) ))
