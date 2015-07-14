@@ -163,44 +163,44 @@ static int print_edscan_handler(struct nl_msg *msg, void *arg)
           genlmsg_attrlen( gnlh, 0 ), NULL );
 
     if ( tb_msg[ NL802154_ATTR_STATUS ] ) {
-        status = nla_get_u8( msg );
+        status = nla_get_u8( tb_msg[ NL802154_ATTR_STATUS ] );
     } else {
         goto protocol_error;
     }
 
     if ( tb_msg[ NL802154_ATTR_SCAN_TYPE ] ) {
-        scan_type = nla_get_u8( msg );
+        scan_type = nla_get_u8( tb_msg[ NL802154_ATTR_SCAN_TYPE ] );
     } else {
         goto protocol_error;
     }
 
     if ( tb_msg[ NL802154_ATTR_PAGE ] ) {
-        channel_page = nla_get_u8( msg );
+        channel_page = nla_get_u8( tb_msg[ NL802154_ATTR_PAGE ] );
     } else {
         goto protocol_error;
     }
 
 
     if ( tb_msg[ NL802154_ATTR_CHANNEL_MASK ] ) {
-        channel_page = nla_get_u32( msg );
+        channel_page = nla_get_u32( tb_msg[ NL802154_ATTR_CHANNEL_MASK ] );
     } else {
         goto protocol_error;
     }
 
     if ( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] ) {
-        channel_page = nla_get_u32( msg );
+        channel_page = nla_get_u32( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
     } else {
         goto protocol_error;
     }
 
     if ( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] ) {
-        channel_page = nla_get_u32( msg );
+        channel_page = nla_get_u32( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
     } else {
         goto protocol_error;
     }
 
     if ( tb_msg[ NL802154_ATTR_ENERGY_DETECT_LIST ] ) {
-        energy_detect_list = nla_get_string( msg );
+        energy_detect_list = nla_get_string( tb_msg[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
     } else {
         goto protocol_error;
     }
@@ -229,7 +229,8 @@ static int handle_ed_scan(struct nl802154_state *state,
     uint8_t channel_page = 0; // (FIXME: extract the page from the phy)
     uint8_t security_level = 0;
     uint8_t key_id_mode = 0;
-    uint8_t key_source[4 + 1] = {};
+    // uint8_t key_source[4 + 1] = {};
+    const char key_source[4 + 1] = {};
     uint8_t key_index = 0;
 
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
