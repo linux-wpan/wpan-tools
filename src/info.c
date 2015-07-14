@@ -212,6 +212,7 @@ static const char *commands[NL802154_CMD_MAX + 1] = {
 	[NL802154_CMD_SET_BACKOFF_EXPONENT] = "set_backoff_exponent",
 	[NL802154_CMD_SET_MAX_CSMA_BACKOFFS] = "set_max_csma_backoffs",
 	[NL802154_CMD_SET_LBT_MODE] = "set_lbt_mode",
+	[NL802154_CMD_GET_ED_SCAN] = "get_ed_scan",
 };
 
 static char cmdbuf[100];
@@ -500,3 +501,43 @@ __COMMAND(NULL, info, "info", NULL, NL802154_CMD_GET_WPAN_PHY, 0, 0, CIB_PHY, ha
 TOPLEVEL(list, NULL, NL802154_CMD_GET_WPAN_PHY, NLM_F_DUMP, CIB_NONE, handle_info,
 	 "List all wireless devices and their capabilities.");
 TOPLEVEL(phy, NULL, NL802154_CMD_GET_WPAN_PHY, NLM_F_DUMP, CIB_NONE, handle_info, NULL);
+
+static int print_edscan_handler(struct nl_msg *msg, void *arg)
+{
+    return 0;
+}
+
+static int handle_ed_scan(struct nl802154_state *state,
+               struct nl_cb *cb,
+               struct nl_msg *msg,
+               int argc, char **argv,
+               enum id_input id)
+{
+    const uint8_t scan_type = 0; // IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
+    uint32_t scan_channels = 0xffffffff; // sweep all channels (FIXME: modify mask based on page, e.g. query NL802154_ATTR_CHANNELS_SUPPORTED)
+    uint8_t scan_duration = 3; // common scan duration
+    uint8_t channel_page = 0; // (FIXME: extract the page from the phy)
+    uint8_t security_level = 0;
+    uint8_t key_id_mode = 0;
+    uint32_t key_source = 0;
+    uint8_t key_index = 0;
+
+    NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
+    NLA_PUT_U32(msg, NL802154_ATTR_CHANNEL_MASK, htole32( scan_channels ) );
+    NLA_PUT_U8(msg, NL802154_ATTR_DURATION, scan_duration);
+    NLA_PUT_U8(msg, NL802154_ATTR_PAGE, channel_page);
+    NLA_PUT_U8(msg, NL802154_ATTR_SECURITY_LEVEL, security_level);
+    NLA_PUT_U8(msg, NL802154_ATTR_KEY_ID_MODE, key_id_mode);
+    NLA_PUT_U32(msg, NL802154_ATTR_KEY_SOURCE, key_source);
+    NLA_PUT_U8(msg, NL802154_ATTR_KEY_INDEX, key_index);
+
+    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_edscan_handler, NULL);
+
+    return 0;
+
+nla_put_failure:
+    return -ENOBUFS;
+}
+
+COMMAND(get, ed_scan, "<page> <duration>",
+    NL802154_CMD_GET_ED_SCAN, 0, CIB_PHY, handle_ed_scan, NULL);

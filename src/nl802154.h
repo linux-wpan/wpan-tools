@@ -52,6 +52,8 @@ enum nl802154_commands {
 
 	NL802154_CMD_SET_LBT_MODE,
 
+	NL802154_CMD_GET_ED_SCAN,
+
 	/* add new commands above here */
 
 	/* used to define NL802154_CMD_MAX below */
@@ -103,6 +105,15 @@ enum nl802154_attrs {
 	NL802154_ATTR_WPAN_PHY_CAPS,
 
 	NL802154_ATTR_SUPPORTED_COMMANDS,
+
+    NL802154_ATTR_SCAN_TYPE,
+    NL802154_ATTR_CHANNEL_MASK,
+    NL802154_ATTR_DURATION,
+
+    NL802154_ATTR_SECURITY_LEVEL,
+    NL802154_ATTR_KEY_ID_MODE,
+    NL802154_ATTR_KEY_SOURCE,
+    NL802154_ATTR_KEY_INDEX,
 
 	/* add attributes here, update the policy in nl802154.c */
 
