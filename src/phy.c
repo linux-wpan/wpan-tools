@@ -142,7 +142,7 @@ nla_put_failure:
 COMMAND(set, cca_ed_level, "<level>",
 	NL802154_CMD_SET_CCA_ED_LEVEL, 0, CIB_PHY, handle_cca_ed_level, NULL);
 
-static int print_edscan_handler(struct nl_msg *msg, void *arg)
+static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
 {
     uint8_t status;
     uint8_t scan_type;
@@ -242,7 +242,7 @@ static int handle_ed_scan(struct nl802154_state *state,
     NLA_PUT_STRING(msg, NL802154_ATTR_KEY_SOURCE, key_source);
     NLA_PUT_U8(msg, NL802154_ATTR_KEY_INDEX, key_index);
 
-    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_edscan_handler, NULL);
+    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_ed_scan_handler, NULL);
 
     return 0;
 
