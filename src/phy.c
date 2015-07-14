@@ -141,3 +141,113 @@ nla_put_failure:
 }
 COMMAND(set, cca_ed_level, "<level>",
 	NL802154_CMD_SET_CCA_ED_LEVEL, 0, CIB_PHY, handle_cca_ed_level, NULL);
+
+static int print_edscan_handler(struct nl_msg *msg, void *arg)
+{
+    uint8_t status;
+    uint8_t scan_type;
+    uint8_t channel_page;
+    uint32_t unscanned_channels;
+    uint8_t result_list_size;
+    //uint8_t energy_detect_list[ 32 ];
+    char *energy_detect_list;
+    uint8_t detected_category;
+
+    struct genlmsghdr *gnlh;
+    struct nlattr *tb_msg[ NL802154_ATTR_MAX + 1 ];
+    int i;
+
+    gnlh = nlmsg_data( nlmsg_hdr( msg ) );
+
+    nla_parse( tb_msg, NL802154_ATTR_MAX, genlmsg_attrdata( gnlh, 0 ),
+          genlmsg_attrlen( gnlh, 0 ), NULL );
+
+    if ( tb_msg[ NL802154_ATTR_STATUS ] ) {
+        status = nla_get_u8( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    if ( tb_msg[ NL802154_ATTR_SCAN_TYPE ] ) {
+        scan_type = nla_get_u8( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    if ( tb_msg[ NL802154_ATTR_PAGE ] ) {
+        channel_page = nla_get_u8( msg );
+    } else {
+        goto protocol_error;
+    }
+
+
+    if ( tb_msg[ NL802154_ATTR_CHANNEL_MASK ] ) {
+        channel_page = nla_get_u32( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    if ( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] ) {
+        channel_page = nla_get_u32( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    if ( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] ) {
+        channel_page = nla_get_u32( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    if ( tb_msg[ NL802154_ATTR_ENERGY_DETECT_LIST ] ) {
+        energy_detect_list = nla_get_string( msg );
+    } else {
+        goto protocol_error;
+    }
+
+    printf( "{ " );
+    for( i=0; i < 32; i++ ) {
+        printf( "%u, ", (uint8_t) energy_detect_list[ i ] );
+    }
+    printf( "}\n" );
+
+    return 0;
+
+protocol_error:
+    return -EINVAL;
+}
+
+static int handle_ed_scan(struct nl802154_state *state,
+               struct nl_cb *cb,
+               struct nl_msg *msg,
+               int argc, char **argv,
+               enum id_input id)
+{
+    const uint8_t scan_type = 0; // IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
+    uint32_t scan_channels = -1; // sweep all channels (FIXME: modify mask based on page, e.g. query NL802154_ATTR_CHANNELS_SUPPORTED)
+    uint8_t scan_duration = 3; // common scan duration
+    uint8_t channel_page = 0; // (FIXME: extract the page from the phy)
+    uint8_t security_level = 0;
+    uint8_t key_id_mode = 0;
+    uint8_t key_source[4 + 1] = {};
+    uint8_t key_index = 0;
+
+    NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
+    NLA_PUT_U32(msg, NL802154_ATTR_CHANNEL_MASK, htole32( scan_channels ) );
+    NLA_PUT_U8(msg, NL802154_ATTR_DURATION, scan_duration);
+    NLA_PUT_U8(msg, NL802154_ATTR_PAGE, channel_page);
+    NLA_PUT_U8(msg, NL802154_ATTR_SECURITY_LEVEL, security_level);
+    NLA_PUT_U8(msg, NL802154_ATTR_KEY_ID_MODE, key_id_mode);
+    NLA_PUT_STRING(msg, NL802154_ATTR_KEY_SOURCE, key_source);
+    NLA_PUT_U8(msg, NL802154_ATTR_KEY_INDEX, key_index);
+
+    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_edscan_handler, NULL);
+
+    return 0;
+
+nla_put_failure:
+    return -ENOBUFS;
+}
+
+COMMAND(get, ed_scan, "<page> <duration>",
+    NL802154_CMD_GET_ED_SCAN, 0, CIB_PHY, handle_ed_scan, NULL);
