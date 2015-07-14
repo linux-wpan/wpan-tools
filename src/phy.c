@@ -230,8 +230,11 @@ static int handle_ed_scan(struct nl802154_state *state,
     uint8_t security_level = 0;
     uint8_t key_id_mode = 0;
     // uint8_t key_source[4 + 1] = {};
-    const char key_source[4 + 1] = {};
+    char key_source[4 + 1];
     uint8_t key_index = 0;
+
+    memset( key_source, 0xff, 4 );
+    key_source[ 4 ] = '\0';
 
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
     NLA_PUT_U32(msg, NL802154_ATTR_CHANNEL_MASK, htole32( scan_channels ) );
