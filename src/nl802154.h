@@ -120,6 +120,8 @@ enum nl802154_attrs {
     NL802154_ATTR_SCAN_RESULT_LIST_SIZE,
     NL802154_ATTR_ENERGY_DETECT_LIST,
 
+    NL802154_ATTR_DETECTED_CATEGORY,
+
 	/* add attributes here, update the policy in nl802154.c */
 
 	__NL802154_ATTR_AFTER_LAST,
