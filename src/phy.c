@@ -156,7 +156,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     uint8_t detected_category;
 
     struct genlmsghdr *gnlh;
-    struct nlattr *tb_msg[ NL802154_ATTR_MAX + 1 ];
+    struct nlattr *tb[ NL802154_ATTR_MAX + 1 ];
     int i;
 
     printf( "in %s\n", __FUNCTION__ );
@@ -167,55 +167,33 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
         goto protocol_error;
     }
 
-    r = nla_parse( tb_msg, NL802154_ATTR_MAX, genlmsg_attrdata( gnlh, 0 ),
+    r = nla_parse( tb, NL802154_ATTR_MAX, genlmsg_attrdata( gnlh, 0 ),
           genlmsg_attrlen( gnlh, 0 ), NULL );
-    if ( 0 != nla_parse ) {
+    if ( 0 != r ) {
         fprintf( stderr, "nla_parse\n" );
         goto protocol_error;
     }
 
-    if ( tb_msg[ NL802154_ATTR_STATUS ] ) {
-        printf( "found status\n" );
-        status = nla_get_u8( tb_msg[ NL802154_ATTR_STATUS ] );
-    } else {
-        goto protocol_error;
+    if ( ! (
+        tb[ NL802154_ATTR_STATUS ] &&
+        tb[ NL802154_ATTR_SCAN_TYPE ] &&
+        tb[ NL802154_ATTR_PAGE ] &&
+        tb[ NL802154_ATTR_CHANNEL_MASK ] &&
+        tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] &&
+        tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] &&
+        tb[ NL802154_ATTR_DETECTED_CATEGORY ]
+    ) ) {
+        r = -EINVAL;
+        goto out;
     }
 
-    if ( tb_msg[ NL802154_ATTR_SCAN_TYPE ] ) {
-        printf( "found scan_type\n" );
-        scan_type = nla_get_u8( tb_msg[ NL802154_ATTR_SCAN_TYPE ] );
-    } else {
-        goto protocol_error;
-    }
-
-    if ( tb_msg[ NL802154_ATTR_PAGE ] ) {
-        printf( "found channel_page\n" );
-        channel_page = nla_get_u8( tb_msg[ NL802154_ATTR_PAGE ] );
-    } else {
-        goto protocol_error;
-    }
-
-
-    if ( tb_msg[ NL802154_ATTR_CHANNEL_MASK ] ) {
-        printf( "found unscanned_channels\n" );
-        unscanned_channels = nla_get_u32( tb_msg[ NL802154_ATTR_CHANNEL_MASK ] );
-    } else {
-        goto protocol_error;
-    }
-
-    if ( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] ) {
-        printf( "found result_list_size\n" );
-        result_list_size = nla_get_u32( tb_msg[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
-    } else {
-        goto protocol_error;
-    }
-
-    if ( tb_msg[ NL802154_ATTR_ENERGY_DETECT_LIST ] ) {
-        printf( "found energe_detect_list\n" );
-        energy_detect_list = nla_get_string( tb_msg[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
-    } else {
-        goto protocol_error;
-    }
+    status = nla_get_u8( tb[ NL802154_ATTR_STATUS ] );
+    scan_type = nla_get_u8( tb[ NL802154_ATTR_SCAN_TYPE ] );
+    channel_page = nla_get_u8( tb[ NL802154_ATTR_PAGE ] );
+    unscanned_channels = nla_get_u32( tb[ NL802154_ATTR_CHANNEL_MASK ] );
+    result_list_size = nla_get_u32( tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
+    energy_detect_list = nla_get_string( tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
+    detected_category = nla_get_u8( tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
 
     printf(
         "status: %u, "
@@ -233,9 +211,9 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
 
     printf( "{ " );
     for( i=0; i < 32; i++ ) {
-        printf( "%u, ", (uint8_t) energy_detect_list[ i ] );
+        printf( "%02x,", (uint8_t) energy_detect_list[ i ] );
     }
-    printf( "}\n" );
+    printf( "}, detected_category: %u\n", detected_category );
 
     r = 0;
     goto out;
