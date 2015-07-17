@@ -301,6 +301,7 @@ static int handle_ed_scan(struct nl802154_state *state,
 
 nla_put_failure:
     r = -ENOBUFS;
+    nla_nest_cancel(msg, ed_req_attr);
 end_nest:
     nla_nest_end(msg, ed_req_attr);
 out:
