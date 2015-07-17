@@ -175,25 +175,25 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     }
 
     if ( ! (
-        tb[ NL802154_ATTR_STATUS ] &&
+        tb[ NL802154_ATTR_SCAN_STATUS ] &&
         tb[ NL802154_ATTR_SCAN_TYPE ] &&
         tb[ NL802154_ATTR_PAGE ] &&
         tb[ NL802154_ATTR_CHANNEL_MASK ] &&
         tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] &&
-        tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] &&
-        tb[ NL802154_ATTR_DETECTED_CATEGORY ]
+        tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ] &&
+        tb[ NL802154_ATTR_SCAN_DETECTED_CATEGORY ]
     ) ) {
         r = -EINVAL;
         goto out;
     }
 
-    status = nla_get_u8( tb[ NL802154_ATTR_STATUS ] );
+    status = nla_get_u8( tb[ NL802154_ATTR_SCAN_STATUS ] );
     scan_type = nla_get_u8( tb[ NL802154_ATTR_SCAN_TYPE ] );
     channel_page = nla_get_u8( tb[ NL802154_ATTR_PAGE ] );
     unscanned_channels = nla_get_u32( tb[ NL802154_ATTR_CHANNEL_MASK ] );
     result_list_size = nla_get_u32( tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
-    energy_detect_list = nla_get_string( tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
-    detected_category = nla_get_u8( tb[ NL802154_ATTR_ENERGY_DETECT_LIST ] );
+    energy_detect_list = nla_get_string( tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ] );
+    detected_category = nla_get_u8( tb[ NL802154_ATTR_SCAN_DETECTED_CATEGORY ] );
 
     printf(
         "status: %u, "
@@ -227,43 +227,85 @@ out:
     return r;
 }
 
+static int put_null_security_bits(struct nl_msg *msg)
+{
+    int r;
+    struct null_security_bits {
+        uint8_t level;
+        uint8_t key_id_mode;
+        // key_source is not present
+        uint8_t key_index;
+    };
+    static const struct null_security_bits bits = {
+        .level = 0,
+        .key_id_mode = 0,
+        .key_index = 0,
+    };
+    struct nlattr *sec_attr;
+    sec_attr = nla_nest_start(msg,NL802154_ATTR_SEC);
+    if ( NULL == sec_attr ) {
+        r = -ENOBUFS;
+        goto out;
+    }
+    NLA_PUT_U8(msg, NL802154_ATTR_SEC_LEVEL, bits.level);
+    NLA_PUT_U8(msg, NL802154_ATTR_SEC_KEY_ID_MODE, bits.key_id_mode);
+    NLA_PUT_U8(msg, NL802154_ATTR_SEC_KEY_INDEX, bits.key_index);
+    nla_nest_end(msg, sec_attr);
+    r = 0;
+    goto end_nest;
+
+nla_put_failure:
+    r = -ENOBUFS;
+end_nest:
+    nla_nest_end(msg, sec_attr);
+out:
+    return r;
+}
+
 static int handle_ed_scan(struct nl802154_state *state,
                struct nl_cb *cb,
                struct nl_msg *msg,
                int argc, char **argv,
                enum id_input id)
 {
+    int r;
+
     const uint8_t scan_type = 0; // IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
     uint32_t scan_channels = -1; // sweep all channels (FIXME: modify mask based on page, e.g. query NL802154_ATTR_CHANNELS_SUPPORTED)
     uint8_t scan_duration = 3; // common scan duration
     uint8_t channel_page = 0; // (FIXME: extract the page from the phy)
-    uint8_t security_level = 0;
-    uint8_t key_id_mode = 0;
-    // uint8_t key_source[4 + 1] = {};
-    char key_source[4 + 1];
-    uint8_t key_index = 0;
 
-    printf( "in %s\n", __FUNCTION__ );
+    struct nlattr *ed_req_attr;
 
-    memset( key_source, 0xff, 4 );
-    key_source[ 4 ] = '\0';
-
+    ed_req_attr = nla_nest_start(msg, NL802154_ATTR_SCAN_REQ);
+    if ( NULL == ed_req_attr ) {
+        r = -ENOBUFS;
+        goto out;
+    }
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
     NLA_PUT_U32(msg, NL802154_ATTR_CHANNEL_MASK, htole32( scan_channels ) );
-    NLA_PUT_U8(msg, NL802154_ATTR_DURATION, scan_duration);
+    NLA_PUT_U8(msg, NL802154_ATTR_SCAN_DURATION, scan_duration);
     NLA_PUT_U8(msg, NL802154_ATTR_PAGE, channel_page);
-    NLA_PUT_U8(msg, NL802154_ATTR_SECURITY_LEVEL, security_level);
-    NLA_PUT_U8(msg, NL802154_ATTR_KEY_ID_MODE, key_id_mode);
-    NLA_PUT_STRING(msg, NL802154_ATTR_KEY_SOURCE, key_source);
-    NLA_PUT_U8(msg, NL802154_ATTR_KEY_INDEX, key_index);
+    r = put_null_security_bits( msg );
+    if ( 0 != r ) {
+        goto end_nest;
+    }
 
-    nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_ed_scan_handler, NULL);
+    r = nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_ed_scan_handler, NULL);
+    if ( 0 != r ) {
+        goto end_nest;
+    }
 
-    return 0;
+    r = 0;
+    goto end_nest;
 
 nla_put_failure:
-    return -ENOBUFS;
+    r = -ENOBUFS;
+end_nest:
+    nla_nest_end(msg, ed_req_attr);
+out:
+    return r;
 }
 
 COMMAND(get, ed_scan, "<page> <duration>",
-    NL802154_CMD_GET_ED_SCAN, 0, CIB_PHY, handle_ed_scan, NULL);
+    NL802154_CMD_ED_SCAN_REQ, 0, CIB_PHY, handle_ed_scan, NULL);
