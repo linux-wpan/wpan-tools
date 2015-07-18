@@ -178,7 +178,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
         tb[ NL802154_ATTR_SCAN_STATUS ] &&
         tb[ NL802154_ATTR_SCAN_TYPE ] &&
         tb[ NL802154_ATTR_PAGE ] &&
-        tb[ NL802154_ATTR_CHANNEL_MASK ] &&
+        tb[ NL802154_ATTR_SUPPORTED_CHANNEL ] &&
         tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] &&
         tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ] &&
         tb[ NL802154_ATTR_SCAN_DETECTED_CATEGORY ]
@@ -190,7 +190,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     status = nla_get_u8( tb[ NL802154_ATTR_SCAN_STATUS ] );
     scan_type = nla_get_u8( tb[ NL802154_ATTR_SCAN_TYPE ] );
     channel_page = nla_get_u8( tb[ NL802154_ATTR_PAGE ] );
-    unscanned_channels = nla_get_u32( tb[ NL802154_ATTR_CHANNEL_MASK ] );
+    unscanned_channels = nla_get_u32( tb[ NL802154_ATTR_SUPPORTED_CHANNEL ] );
     result_list_size = nla_get_u32( tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
     energy_detect_list = nla_get_string( tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ] );
     detected_category = nla_get_u8( tb[ NL802154_ATTR_SCAN_DETECTED_CATEGORY ] );
@@ -256,6 +256,8 @@ static int put_null_security_bits(struct nl_msg *msg)
 
 nla_put_failure:
     r = -ENOBUFS;
+    nla_nest_cancel(msg, sec_attr);
+    goto out;
 end_nest:
     nla_nest_end(msg, sec_attr);
 out:
@@ -283,7 +285,7 @@ static int handle_ed_scan(struct nl802154_state *state,
         goto out;
     }
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
-    NLA_PUT_U32(msg, NL802154_ATTR_CHANNEL_MASK, htole32( scan_channels ) );
+    NLA_PUT_U32(msg, NL802154_ATTR_SUPPORTED_CHANNEL, htole32( scan_channels ) );
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_DURATION, scan_duration);
     NLA_PUT_U8(msg, NL802154_ATTR_PAGE, channel_page);
     r = put_null_security_bits( msg );
@@ -302,6 +304,7 @@ static int handle_ed_scan(struct nl802154_state *state,
 nla_put_failure:
     r = -ENOBUFS;
     nla_nest_cancel(msg, ed_req_attr);
+    goto out;
 end_nest:
     nla_nest_end(msg, ed_req_attr);
 out:
