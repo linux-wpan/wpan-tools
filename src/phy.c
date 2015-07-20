@@ -146,26 +146,29 @@ static int parse_nla_array_u8( struct nlattr *a, const int type, uint8_t *value,
     int r;
 
     const size_t maxlen = *len;
+    struct nlattr *e;
     size_t _len = 0;
-    int rem = nla_len( a );
+    int rem;
 
-    for( ;; ) {
+    if ( NULL == a || NULL == value || NULL == len || type <= 0 || type > NL802154_ATTR_MAX ) {
+        r = -EINVAL;
+        goto out;
+    }
+
+    nla_for_each_nested(e, a, rem) {
         if ( _len >= maxlen ) {
             break;
         }
-        if ( type != nla_type( a ) ) {
+        if ( type != nla_type( e ) ) {
             break;
         }
-        value[ _len ] = nla_get_u8( a );
+        value[ _len ] = nla_get_u8( e );
         _len++;
-        if ( ! nla_ok( a, rem ) ) {
-            break;
-        }
-        a = nla_next( a, &rem );
     }
 
     *len = _len;
     r = 0;
+out:
     return r;
 }
 
@@ -219,7 +222,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     unscanned_channels = nla_get_u32( tb[ NL802154_ATTR_SUPPORTED_CHANNEL ] );
     result_list_size = nla_get_u32( tb[ NL802154_ATTR_SCAN_RESULT_LIST_SIZE ] );
     len = sizeof( ed ) / sizeof( ed[ 0 ] );
-    r = parse_nla_array_u8( tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ], NL802154_ATTR_SCAN_ENERGY_DETECT_LIST_ENTRY , ed, &len );
+    r = parse_nla_array_u8( tb[ NL802154_ATTR_SCAN_ENERGY_DETECT_LIST ], NL802154_ATTR_SCAN_ENERGY_DETECT_LIST_ENTRY, ed, &len );
     if ( 0 != r ) {
         goto protocol_error;
     }
@@ -239,7 +242,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
         result_list_size
     );
     printf( "{ " );
-    for( i=0, j=0; i < sizeof( ed ) / sizeof( ed[ 0 ] ); i++ ) {
+    for( i=0, j=0; i < sizeof( ed ) / sizeof( ed[ 0 ] ) && j <= result_list_size; i++ ) {
         if ( scan_channels & ( 1 << i ) ) {
             printf( "%u:%u,", i, ed[ j ]  );
             j++;
@@ -255,7 +258,6 @@ protocol_error:
     r = -EINVAL;
 
 out:
-    printf( "returning %d\n", r );
     return r;
 }
 
@@ -267,44 +269,55 @@ static int handle_ed_scan(struct nl802154_state *state,
 {
     int r;
 
-    int i, err;
+    int i;
 
     const uint8_t scan_type = 0; // IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
-    uint8_t channel_page = 0;
-    uint32_t scan_channels = 0x7fff800;
-    uint8_t scan_duration = 3;
+    uint32_t channel_page = 0;
+    static uint32_t scan_channels = 0x7fff800;
+    uint32_t scan_duration = 3;
 
-    for( i = 0; i < argc; i++ ) {
-        printf( "argv[%d]:%s\n", i, argv[i] );
+    if ( argc >= 1 ) {
+        if ( 1 != sscanf( argv[ 0 ], "%u", &channel_page ) ) {
+            goto invalid_arg;
+        }
+    }
+    if ( argc >= 2 ) {
+        if ( ! (
+            ( 0 == strncmp( "0x", argv[ 1], 2 ) && 1 == sscanf( argv[ 1 ] + 2, "%x", &scan_channels ) ) ||
+            1 == sscanf( argv[ 1 ], "%u", &scan_channels )
+        ) ) {
+            goto invalid_arg;
+        }
+    }
+    if ( argc == 3 ) {
+        if ( 1 != sscanf( argv[ 2 ], "%u", &scan_duration ) ) {
+            goto invalid_arg;
+        }
+    }
+    if ( argc > 3 ) {
+        goto invalid_arg;
     }
 
-    struct nlattr *ed_req_attr;
-
-    ed_req_attr = nla_nest_start(msg, NL802154_ATTR_SCAN_REQ);
-    if ( NULL == ed_req_attr ) {
-        goto nla_put_failure;
-    }
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_TYPE, scan_type);
-    NLA_PUT_U32(msg, NL802154_ATTR_SUPPORTED_CHANNEL, htole32( scan_channels ) );
+    NLA_PUT_U32(msg, NL802154_ATTR_SUPPORTED_CHANNEL, scan_channels );
     NLA_PUT_U8(msg, NL802154_ATTR_SCAN_DURATION, scan_duration);
     NLA_PUT_U8(msg, NL802154_ATTR_PAGE, channel_page);
 
     r = nl_cb_set(cb, NL_CB_VALID, NL_CB_CUSTOM, print_ed_scan_handler, &scan_channels );
     if ( 0 != r ) {
-        goto end_nest;
+        goto out;
     }
 
     r = 0;
-    goto end_nest;
+    goto out;
 
 nla_put_failure:
     r = -ENOBUFS;
-    nla_nest_cancel(msg, ed_req_attr);
-    goto out;
-end_nest:
-    nla_nest_end(msg, ed_req_attr);
 out:
     return r;
+invalid_arg:
+    r = 1;
+    goto out;
 }
 
 COMMAND(get, ed_scan, "[<page> [<channels> [<duration>]]]",
