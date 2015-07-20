@@ -244,7 +244,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     printf( "{ " );
     for( i=0, j=0; i < sizeof( ed ) / sizeof( ed[ 0 ] ) && j <= result_list_size; i++ ) {
         if ( scan_channels & ( 1 << i ) ) {
-            printf( "%u:%u,", i, ed[ j ]  );
+            printf( "%u:%u, ", i, ed[ j ]  );
             j++;
         }
     }
