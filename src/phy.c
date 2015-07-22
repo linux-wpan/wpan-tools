@@ -142,6 +142,13 @@ nla_put_failure:
 COMMAND(set, cca_ed_level, "<level>",
 	NL802154_CMD_SET_CCA_ED_LEVEL, 0, CIB_PHY, handle_cca_ed_level, NULL);
 
+#ifndef IEEE802154_MAX_CHANNEL
+#define IEEE802154_MAX_CHANNEL 26
+#endif /* IEEE802154_MAX_CHANNEL */
+#ifndef IEEE802154_MAX_PAGE
+#define IEEE802154_MAX_PAGE 31
+#endif /* IEEE802154_MAX_PAGE */
+
 static int parse_nla_array_u8( struct nlattr *a, const int type, uint8_t *value, size_t *len ) {
     int r;
 
@@ -183,7 +190,7 @@ static int print_ed_scan_handler(struct nl_msg *msg, void *arg)
     uint32_t scan_channels = *((uint32_t *)arg);
     uint32_t unscanned_channels;
     uint8_t result_list_size;
-    uint8_t ed[ 32 ]; // XXX: IEEE802154_MAX_CHANNEL + 1
+    uint8_t ed[ IEEE802154_MAX_CHANNEL + 1 ];
     uint8_t detected_category;
 
     struct genlmsghdr *gnlh;
@@ -271,15 +278,24 @@ static int handle_ed_scan(struct nl802154_state *state,
 
     int i;
 
-    const uint8_t scan_type = 0; // IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
+    const uint8_t scan_type = 0; // XXX: define IEEE802154_MAC_SCAN_ED (FIXME: don't use magic numbers)
     uint32_t channel_page = 0;
-    static uint32_t scan_channels = 0x7fff800;
+    static uint32_t scan_channels;
     uint32_t scan_duration = 3;
 
     if ( argc >= 1 ) {
         if ( 1 != sscanf( argv[ 0 ], "%u", &channel_page ) ) {
             goto invalid_arg;
         }
+    }
+    // specify a sane default of scan_channels
+    // if channel_page was specified or not
+    switch( channel_page ) {
+    case 0:
+        scan_channels = 0x7fff800;
+        /* no break */
+    default:
+        break;
     }
     if ( argc >= 2 ) {
         if ( ! (
