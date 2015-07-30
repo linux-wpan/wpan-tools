@@ -212,6 +212,7 @@ static const char *commands[NL802154_CMD_MAX + 1] = {
 	[NL802154_CMD_SET_BACKOFF_EXPONENT] = "set_backoff_exponent",
 	[NL802154_CMD_SET_MAX_CSMA_BACKOFFS] = "set_max_csma_backoffs",
 	[NL802154_CMD_SET_LBT_MODE] = "set_lbt_mode",
+	[NL802154_CMD_ED_SCAN_REQ] = "get_ed_scan",
 };
 
 static char cmdbuf[100];
