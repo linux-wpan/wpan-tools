@@ -223,6 +223,8 @@ static int print_iface_handler(struct nl_msg *msg, void *arg)
 		printf("%s\tmax_csma_backoffs %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_MAX_CSMA_BACKOFFS]));
 	if (tb_msg[NL802154_ATTR_LBT_MODE])
 		printf("%s\tlbt %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_LBT_MODE]));
+	if (tb_msg[NL802154_ATTR_ACKREQ_DEFAULT])
+		printf("%s\tackreq_default %d\n", indent, nla_get_u8(tb_msg[NL802154_ATTR_ACKREQ_DEFAULT]));
 
 	return NL_SKIP;
 }

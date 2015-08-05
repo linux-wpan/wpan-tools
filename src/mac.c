@@ -185,3 +185,31 @@ nla_put_failure:
 }
 COMMAND(set, lbt, "<1|0>",
 	NL802154_CMD_SET_LBT_MODE, 0, CIB_NETDEV, handle_lbt_mode, NULL);
+
+static int handle_ackreq_default(struct nl802154_state *state,
+				 struct nl_cb *cb,
+				 struct nl_msg *msg,
+				 int argc, char **argv,
+				 enum id_input id)
+{
+	unsigned long ackreq;
+	char *end;
+
+	if (argc < 1)
+		return 1;
+
+	/* ACKREQ_DEFAULT */
+	ackreq = strtoul(argv[0], &end, 0);
+	if (*end != '\0')
+		return 1;
+
+	NLA_PUT_U8(msg, NL802154_ATTR_ACKREQ_DEFAULT, ackreq);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, ackreq_default, "<1|0>",
+	NL802154_CMD_SET_ACKREQ_DEFAULT, 0, CIB_NETDEV, handle_ackreq_default,
+	NULL);
