@@ -7,7 +7,6 @@ AM_CPPFLAGS = \
 	-include $(top_builddir)/config.h \
 	-DSYSCONFDIR=\""$(sysconfdir)"\" \
 	-DLIBEXECDIR=\""$(libexecdir)"\" \
-	-I${top_srcdir}/src/abc \
 	-I${top_srcdir}/src
 
 AM_CFLAGS = ${WPAN_TOOLS_CFLAGS} \
