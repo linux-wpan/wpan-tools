@@ -36,6 +36,9 @@ static int handle_channel_set(struct nl802154_state *state,
 	if (*end != '\0')
 		return 1;
 
+	if (page > UINT8_MAX || channel > UINT8_MAX)
+		return 1;
+
 	NLA_PUT_U8(msg, NL802154_ATTR_PAGE, page);
 	NLA_PUT_U8(msg, NL802154_ATTR_CHANNEL, channel);
 
