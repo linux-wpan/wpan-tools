@@ -107,7 +107,7 @@ void usage(const char *name) {
 	"--size | -s packet length\n"
 	"--interface | -i listen on this interface (default wpan0)\n"
 	"--version | -v print out version\n"
-	"--help This usage text\n", name);
+	"--help | -h this usage text\n", name);
 }
 
 static int nl802154_init(struct config *conf)
