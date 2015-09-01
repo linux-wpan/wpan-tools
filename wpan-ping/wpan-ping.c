@@ -443,9 +443,9 @@ int main(int argc, char *argv[]) {
 	while (1) {
 #ifdef HAVE_GETOPT_LONG
 		int opt_idx = -1;
-		c = getopt_long(argc, argv, "b:a:ec:s:i:dvh", perf_long_opts, &opt_idx);
+		c = getopt_long(argc, argv, "a:ec:s:i:dvh", perf_long_opts, &opt_idx);
 #else
-		c = getopt(argc, argv, "b:a:ec:s:i:dvh");
+		c = getopt(argc, argv, "a:ec:s:i:dvh");
 #endif
 		if (c == -1)
 			break;
