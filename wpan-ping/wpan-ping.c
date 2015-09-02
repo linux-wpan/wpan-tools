@@ -385,6 +385,9 @@ static int parse_dst_addr(struct config *conf, char *arg)
 {
 	int i;
 
+	if (!arg)
+		return -1;
+
 	/* PAN ID is filled from netlink in get_interface_info */
 	conf->dst.family = AF_IEEE802154;
 
@@ -422,7 +425,7 @@ static int parse_dst_addr(struct config *conf, char *arg)
 int main(int argc, char *argv[]) {
 	int c, ret;
 	struct config *conf;
-	char *dst_addr;
+	char *dst_addr = NULL;
 
 	conf = malloc(sizeof(struct config));
 
