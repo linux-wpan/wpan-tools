@@ -69,7 +69,7 @@ struct sockaddr_ieee802154 {
 	struct ieee802154_addr_sa addr;
 };
 
-#ifdef HAVE_GETOPT_LONG
+#ifdef _GNU_SOURCE
 static const struct option perf_long_opts[] = {
 	{ "daemon", no_argument, NULL, 'd' },
 	{ "address", required_argument, NULL, 'a' },
@@ -441,7 +441,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	while (1) {
-#ifdef HAVE_GETOPT_LONG
+#ifdef _GNU_SOURCE
 		int opt_idx = -1;
 		c = getopt_long(argc, argv, "a:ec:s:i:dvh", perf_long_opts, &opt_idx);
 #else
