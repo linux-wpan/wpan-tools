@@ -1,0 +1,39 @@
+#!/bin/bash
+
+WPAN_DEV=""
+FILE=""
+
+function usage() {
+	echo "usage: -d \$WPAN_DEV -f \$FILE"
+}
+
+while getopts "d:f:" opt; do
+	case $opt in
+		d)
+			WPAN_DEV=$OPTARG
+			;;
+		f)
+			FILE=$OPTARG
+			;;
+		?)
+			usage
+			;;
+	esac
+done
+
+if [ -z $FILE ] || [ -z $WPAN_DEV ]
+then
+	usage
+	exit 1
+fi
+
+function failed() {
+	echo "failed" >&2
+	rm $FILE
+}
+
+iwpan dev $WPAN_DEV seclevel dump > $FILE &&
+iwpan dev $WPAN_DEV device dump >> $FILE &&
+iwpan dev $WPAN_DEV devkey dump >> $FILE &&
+iwpan dev $WPAN_DEV key dump >> $FILE ||
+failed

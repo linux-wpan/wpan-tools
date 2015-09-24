@@ -1,6 +1,10 @@
 bin_PROGRAMS = \
 	iwpan
 
+bin_SCRIPTS = \
+	iwpan-store \
+	iwpan-restore
+
 iwpan_SOURCES = \
 	iwpan.c \
 	iwpan.h \
