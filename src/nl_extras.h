@@ -1,6 +1,8 @@
 #ifndef __NL_EXTRAS_H
 #define __NL_EXTRAS_H
 
+#if LIBNL_VER_MIC <= 26
+
 #ifndef NLA_S8
 
 #define NLA_S8	13
@@ -42,5 +44,7 @@ static inline int32_t nla_get_s32(struct nlattr *nla)
 	NLA_PUT_TYPE(n, int64_t, attrtype, value)
 
 #endif /* NLA_S64 */
+
+#endif /* LIBNL_VER_MIC */
 
 #endif /* __NL_EXTRAS_H */
