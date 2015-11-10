@@ -372,6 +372,7 @@ static int init_network(struct config *conf) {
 	ret = bind(sd, (struct sockaddr *)&conf->src, sizeof(conf->src));
 	if (ret) {
 		perror("bind");
+		close(sd);
 		return 1;
 	}
 
