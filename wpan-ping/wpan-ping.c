@@ -151,7 +151,6 @@ static void nl802154_cleanup(struct config *conf)
 static int nl_msg_cb(struct nl_msg* msg, void* arg)
 {
 	struct config *conf = arg;
-	struct sockaddr_nl nla;
 	struct nlmsghdr *nlh = nlmsg_hdr(msg);
 	struct nlattr *attrs[NL802154_ATTR_MAX+1];
 	uint64_t temp;
