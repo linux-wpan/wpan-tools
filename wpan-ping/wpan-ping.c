@@ -254,7 +254,10 @@ static int measure_roundtrip(struct config *conf, int sd) {
 	/* 500ms seconds packet receive timeout */
 	timeout.tv_sec = 0;
 	timeout.tv_usec = 500000;
-	setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&timeout,sizeof(struct timeval));
+	ret = setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, (struct timeval *)&timeout,sizeof(struct timeval));
+	if (ret < 0) {
+		perror("setsockopt receive timeout");
+	}
 
 	count = 0;
 	for (i = 0; i < conf->packets; i++) {
