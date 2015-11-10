@@ -345,12 +345,14 @@ static void init_server(struct config *conf, int sd) {
 		len = recvfrom(sd, buf, MAX_PAYLOAD_LEN, 0, (struct sockaddr *)&src, &addrlen);
 		if (len < 0) {
 			perror("recvfrom");
+			continue;
 		}
 		//dump_packet(buf, len);
 		/* Send same packet back */
 		len = sendto(sd, buf, len, 0, (struct sockaddr *)&src, addrlen);
 		if (len < 0) {
 			perror("sendto");
+			continue;
 		}
 	}
 	free(buf);
