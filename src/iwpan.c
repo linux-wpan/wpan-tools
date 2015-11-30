@@ -21,7 +21,7 @@
 
 /* TODO libnl 1.x compatibility code */
 
-int iwpan_debug = 0;
+static int iwpan_debug = 0;
 
 static int nl802154_init(struct nl802154_state *state)
 {

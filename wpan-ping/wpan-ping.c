@@ -99,7 +99,7 @@ struct config {
 
 extern char *optarg;
 
-void usage(const char *name) {
+static void usage(const char *name) {
 	printf("Usage: %s OPTIONS\n"
 	"OPTIONS:\n"
 	"--daemon |-d\n"
