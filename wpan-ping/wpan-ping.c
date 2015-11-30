@@ -49,6 +49,8 @@
 /* Set the dispatch header to not 6lowpan for compat */
 #define NOT_A_6LOWPAN_FRAME 0x00
 
+#define DEBUG 0
+
 enum {
 	IEEE802154_ADDR_NONE = 0x0,
 	IEEE802154_ADDR_SHORT = 0x2,
@@ -195,6 +197,7 @@ static int get_interface_info(struct config *conf) {
 	return 0;
 }
 
+#if DEBUG
 static void dump_packet(unsigned char *buf, int len) {
 	int i;
 
@@ -204,6 +207,7 @@ static void dump_packet(unsigned char *buf, int len) {
 	}
 	printf("\n");
 }
+#endif
 
 static int generate_packet(unsigned char *buf, struct config *conf, unsigned int seq_num) {
 	int i;
@@ -347,7 +351,9 @@ static void init_server(struct config *conf, int sd) {
 			perror("recvfrom");
 			continue;
 		}
-		//dump_packet(buf, len);
+#if DEBUG
+		dump_packet(buf, len);
+#endif
 		/* Send same packet back */
 		len = sendto(sd, buf, len, 0, (struct sockaddr *)&src, addrlen);
 		if (len < 0) {
