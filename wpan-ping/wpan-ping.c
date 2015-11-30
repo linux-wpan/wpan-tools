@@ -481,6 +481,7 @@ int main(int argc, char *argv[]) {
 			if (conf->packet_len >= MAX_PAYLOAD_LEN || conf->packet_len < MIN_PAYLOAD_LEN) {
 				printf("Packet size must be between %i and %i.\n",
 				       MIN_PAYLOAD_LEN, MAX_PAYLOAD_LEN - 1);
+				free(conf);
 				return 1;
 			}
 			break;
@@ -489,12 +490,15 @@ int main(int argc, char *argv[]) {
 			break;
 		case 'v':
 			fprintf(stdout, "wpan-ping " PACKAGE_VERSION "\n");
+			free(conf);
 			return 1;
 		case 'h':
 			usage(argv[0]);
+			free(conf);
 			return 1;
 		default:
 			usage(argv[0]);
+			free(conf);
 			return 1;
 		}
 	}
