@@ -333,7 +333,7 @@ static int measure_roundtrip(struct config *conf, int sd) {
 	return 0;
 }
 
-static void init_server(struct config *conf, int sd) {
+static void init_server(int sd) {
 	ssize_t len;
 	unsigned char *buf;
 	struct sockaddr_ieee802154 src;
@@ -383,7 +383,7 @@ static int init_network(struct config *conf) {
 	}
 
 	if (conf->server)
-		init_server(conf, sd);
+		init_server(sd);
 	else
 		measure_roundtrip(conf, sd);
 
