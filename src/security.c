@@ -103,7 +103,7 @@ static int handle_parse_key_id(struct nl_msg *msg, int attrtype,
 			if ((*argc) < 1)
 				return 1;
 
-			/* dev_addr_short */
+			/* dev_addr_extended */
 			extended_addr = strtoull((*argv)[0], &end, 0);
 			if (*end != '\0')
 				return 1;
@@ -120,7 +120,7 @@ static int handle_parse_key_id(struct nl_msg *msg, int attrtype,
 		if (!dev_addr_msg)
 			return -ENOMEM;
 
-		NLA_PUT_U16(dev_addr_msg, NL802154_DEV_ADDR_ATTR_PAN_ID, pan_id);
+		NLA_PUT_U16(dev_addr_msg, NL802154_DEV_ADDR_ATTR_PAN_ID, htole16(pan_id));
 		NLA_PUT_U32(dev_addr_msg, NL802154_DEV_ADDR_ATTR_MODE, dev_addr_mode);
 		NLA_PUT_U16(dev_addr_msg, NL802154_DEV_ADDR_ATTR_SHORT, htole16(short_addr));
 		NLA_PUT_U64(dev_addr_msg, NL802154_DEV_ADDR_ATTR_EXTENDED, htole64(extended_addr));
@@ -670,7 +670,7 @@ static int print_key_id(struct nlattr *tb) {
 						break;
 					case NL802154_DEV_ADDR_EXTENDED:
 						printf("0x%016" PRIx64 " ",
-						       le64toh(nla_get_u64(tb_dev_addr[NL802154_DEV_ADDR_ATTR_SHORT])));
+						       le64toh(nla_get_u64(tb_dev_addr[NL802154_DEV_ADDR_ATTR_EXTENDED])));
 						break;
 					default:
 						/* TODO error handling */
