@@ -467,7 +467,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 				printf("false,true\n");
 				break;
 			default:
-				printf("unkown\n");
+				printf("unknown\n");
 				break;
 			}
 		}
