@@ -32,6 +32,7 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <stdbool.h>
+#include <limits.h>
 
 #include <netlink/netlink.h>
 
@@ -443,11 +444,17 @@ int main(int argc, char *argv[]) {
 	/* Default to interface wpan0 if nothing else is given */
 	conf->interface = "wpan0";
 
-	/* Deafult to minimum packet size */
+	/* Default to minimum packet size */
 	conf->packet_len = MIN_PAYLOAD_LEN;
 
 	/* Default to short addressing */
 	conf->extended = false;
+
+	/* Default to client mode */
+	conf->server = false;
+
+	/* Default to 65535 packets being sent */
+	conf->packets = USHRT_MAX;
 
 	if (argc < 2) {
 		usage(argv[0]);
