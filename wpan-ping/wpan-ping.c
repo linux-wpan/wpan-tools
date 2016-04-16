@@ -438,7 +438,7 @@ int main(int argc, char *argv[]) {
 	struct config *conf;
 	char *dst_addr = NULL;
 
-	conf = malloc(sizeof(struct config));
+	conf = calloc(1, sizeof(struct config));
 
 	/* Default to interface wpan0 if nothing else is given */
 	conf->interface = "wpan0";
