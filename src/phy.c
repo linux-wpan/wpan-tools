@@ -2,6 +2,10 @@
 #include <errno.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/param.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include <netlink/genl/genl.h>
 #include <netlink/genl/family.h>
@@ -144,3 +148,65 @@ nla_put_failure:
 }
 COMMAND(set, cca_ed_level, "<level>",
 	NL802154_CMD_SET_CCA_ED_LEVEL, 0, CIB_PHY, handle_cca_ed_level, NULL);
+
+#ifndef NETNS_RUN_DIR
+#define NETNS_RUN_DIR "/var/run/netns"
+#endif
+static int netns_get_fd(const char *name)
+{
+	char pathbuf[MAXPATHLEN];
+	const char *path, *ptr;
+
+	path = name;
+	ptr = strchr(name, '/');
+	if (!ptr) {
+		snprintf(pathbuf, sizeof(pathbuf), "%s/%s",
+			NETNS_RUN_DIR, name );
+		path = pathbuf;
+	}
+	return open(path, O_RDONLY);
+}
+
+static int handle_netns(struct nl802154_state *state,
+			struct nl_cb *cb,
+			struct nl_msg *msg,
+			int argc, char **argv,
+			enum id_input id)
+{
+	char *end;
+	int fd;
+
+	if (argc < 1 || !*argv[0])
+		return 1;
+
+	if (argc == 1) {
+		NLA_PUT_U32(msg, NL802154_ATTR_PID,
+			    strtoul(argv[0], &end, 10));
+		if (*end != '\0') {
+			printf("Invalid parameter: pid(%s)\n", argv[0]);
+			return 1;
+		}
+		return 0;
+	}
+
+	if (argc != 2 || strcmp(argv[0], "name"))
+		return 1;
+
+	if ((fd = netns_get_fd(argv[1])) >= 0) {
+		NLA_PUT_U32(msg, NL802154_ATTR_NETNS_FD, fd);
+		return 0;
+	} else {
+		printf("Invalid parameter: nsname(%s)\n", argv[0]);
+	}
+
+	return 1;
+
+ nla_put_failure:
+	return -ENOBUFS;
+}
+COMMAND(set, netns, "{ <pid> | name <nsname> }",
+	NL802154_CMD_SET_WPAN_PHY_NETNS, 0, CIB_PHY, handle_netns,
+	"Put this wpan device into a different network namespace:\n"
+	"    <pid>    - change network namespace by process id\n"
+	"    <nsname> - change network namespace by name from "NETNS_RUN_DIR"\n"
+	"               or by absolute path (man ip-netns)\n");
