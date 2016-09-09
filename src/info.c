@@ -472,16 +472,6 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 			}
 		}
 	}
-
-	if (tb_msg[NL802154_ATTR_SUPPORTED_COMMANDS]) {
-		struct nlattr *nl_cmd;
-		int rem_cmd;
-
-		printf("Supported commands:\n");
-		nla_for_each_nested(nl_cmd, tb_msg[NL802154_ATTR_SUPPORTED_COMMANDS], rem_cmd)
-			printf("\t* %s\n", command_name(nla_get_u32(nl_cmd)));
-	}
-
 	return 0;
 }
 
