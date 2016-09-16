@@ -378,9 +378,9 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 			printf("\ttx_powers: ");
 			nla_for_each_nested(nl_pwrs, tb_caps[NL802154_CAP_ATTR_TX_POWERS], rem_pwrs) {
 				if (counter % 6 == 0) {
-					printf("\n\t\t\t%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_pwrs)));
+					printf("\n\t\t\t%.3g dBm, ", MBM_TO_DBM(nla_get_s32(nl_pwrs)));
 				} else {
-					printf("%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_pwrs)));
+					printf("%.3g dBm, ", MBM_TO_DBM(nla_get_s32(nl_pwrs)));
 				}
 				counter++;
 			}
@@ -396,9 +396,9 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 			printf("\tcca_ed_levels: ");
 			nla_for_each_nested(nl_levels, tb_caps[NL802154_CAP_ATTR_CCA_ED_LEVELS], rem_levels) {
 				if (counter % 6 == 0) {
-					printf("\n\t\t\t%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
+					printf("\n\t\t\t%.3g dBm, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
 				} else {
-					printf("%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
+					printf("%.3g dBm, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
 				}
 				counter++;
 			}
