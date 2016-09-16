@@ -390,11 +390,18 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 
 		if (tb_caps[NL802154_CAP_ATTR_CCA_ED_LEVELS]) {
 			int rem_levels;
+			int counter = 0;
 			struct nlattr *nl_levels;
 
 			printf("\tcca_ed_levels: ");
-			nla_for_each_nested(nl_levels, tb_caps[NL802154_CAP_ATTR_CCA_ED_LEVELS], rem_levels)
-				printf("%.3g,", MBM_TO_DBM(nla_get_s32(nl_levels)));
+			nla_for_each_nested(nl_levels, tb_caps[NL802154_CAP_ATTR_CCA_ED_LEVELS], rem_levels) {
+				if (counter % 6 == 0) {
+					printf("\n\t\t\t%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
+				} else {
+					printf("%.3g dBM, ", MBM_TO_DBM(nla_get_s32(nl_levels)));
+				}
+				counter++;
+			}
 			/* TODO */
 			printf("\b \n");
 		}
