@@ -1,0 +1,34 @@
+This folder contains various examples on how the Linux-wpan stack can be used
+from userspace, using the Linux socket interface.
+
+These examples do not cover all socket programming functionality nor do they
+give a real introduction to it. Their aim is to provide some quick examples for
+using the Linux-wpan stack for developers familiar with socket programming.
+
+Keep in mind that the socket interface is used for the data plane. For the
+configuration plane you would use netlink, which is heavily demonstrated in
+iwpan itself.
+
+Examples:
+---------
+Address family AF_IEEE802154 with type SOCK_DGRAM:
+  * Direct usage of IEEE 802.15.4 frames, no 6LoWPAN involved
+  * Short and extended address usage is demonstrated
+  * af_ieee802154_rx loops and prints each received IEEE 802.15.4 frame on stdout
+  * af_ieee802154_tx sends a IEEE 802.15.4 frame
+
+Address family AF_INET6 with type SOCK_DGRAM:
+  * 6LoWPAN examples, IPv6 over IEEE 802.15.4
+  * af_inet6_rx binds on any IPv6 address on UDP port
+  * af_inet6_tx sends an UDP packet to the IPv6 all nodes address
+
+Address family AF_PACKET with type SOCK_RAW:
+  * Raw access to IEEE 8021.5.4 frames for rx and tx
+  * Useful for sniffer, packet generators, network stack in userspace, etc
+  * af_packet_rx loops and prints each frame as hexdump
+  * af_packet_tx constructs the raw packet payload manually and sends it
+
+Some of the example need special privileges to run. If you get a error like:
+socket: Operation not permitted
+
+Make sure your user that the needed privileges or run the example with sudo.

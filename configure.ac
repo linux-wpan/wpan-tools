@@ -56,6 +56,7 @@ AC_CONFIG_FILES([
         Makefile
 	src/Makefile
 	wpan-ping/Makefile
+	examples/Makefile
 ])
 
 AC_OUTPUT
