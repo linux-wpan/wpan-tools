@@ -1,4 +1,5 @@
 bin_PROGRAMS = af_ieee802154_tx \
-	       af_ieee802154_rx
+	       af_ieee802154_rx \
+	       af_packet_rx
 
 EXTRA_DIST = README.examples
