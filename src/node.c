@@ -44,13 +44,15 @@ static int print_node_handler(struct nl_msg *msg, void *arg)
 	}
 
 	if (ninfo[NL802154_NODE_INFO_ATTR_LQI])
-		printf("\tlqi: %x\n", nla_get_u8(ninfo[NL802154_NODE_INFO_ATTR_LQI]));
+		printf("lqi: %x ", nla_get_u8(ninfo[NL802154_NODE_INFO_ATTR_LQI]));
 
 	if (ninfo[NL802154_NODE_INFO_ATTR_TX_SUCCESS])
-		printf("\ttx: %llu\n", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_TX_SUCCESS]));
+		printf("tx: %llu ", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_TX_SUCCESS]));
 
 	if (ninfo[NL802154_NODE_INFO_ATTR_TX_NO_ACK])
-		printf("\tno ack: %llu\n", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_TX_NO_ACK]));
+		printf("no ack: %llu ", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_TX_NO_ACK]));
+
+	printf("\n");
 
 	return NL_SKIP;
 }
