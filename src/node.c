@@ -52,6 +52,12 @@ static int print_node_handler(struct nl_msg *msg, void *arg)
 	if (ninfo[NL802154_NODE_INFO_ATTR_TX_NO_ACK])
 		printf("no ack: %llu ", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_TX_NO_ACK]));
 
+	if (ninfo[NL802154_NODE_INFO_ATTR_LQI_SUM])
+		printf("lqi_sum: %llu ", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_LQI_SUM]));
+
+	if (ninfo[NL802154_NODE_INFO_ATTR_RECEIVED])
+		printf("received: %llu ", nla_get_u64(ninfo[NL802154_NODE_INFO_ATTR_RECEIVED]));
+
 	printf("\n");
 
 	return NL_SKIP;
