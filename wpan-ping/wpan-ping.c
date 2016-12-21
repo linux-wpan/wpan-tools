@@ -303,6 +303,10 @@ static int measure_roundtrip(struct config *conf, int sd) {
 		}
 		gettimeofday(&start_time, NULL);
 		ret = recv(sd, buf, conf->packet_len, 0);
+		if (buf[0] != NOT_A_6LOWPAN_FRAME) {
+			printf("Non-wpanping packet was received\n");
+			continue;
+		}
 		if (seq_num != ((buf[2] << 8)| buf[3])) {
 			printf("Sequenze number did not match\n");
 			continue;
@@ -386,11 +390,13 @@ static void init_server(int sd) {
 #if DEBUG
 		dump_packet(buf, len);
 #endif
-		/* Send same packet back */
-		len = sendto(sd, buf, len, 0, (struct sockaddr *)&src, addrlen);
-		if (len < 0) {
-			perror("sendto");
-			continue;
+		if (buf[0] == NOT_A_6LOWPAN_FRAME) {
+			/* Send same packet back */
+			len = sendto(sd, buf, len, 0, (struct sockaddr *)&src, addrlen);
+			if (len < 0) {
+				perror("sendto");
+				continue;
+			}
 		}
 	}
 	free(buf);
