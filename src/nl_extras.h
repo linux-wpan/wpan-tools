@@ -1,7 +1,7 @@
 #ifndef __NL_EXTRAS_H
 #define __NL_EXTRAS_H
 
-#if LIBNL_VER_MIC <= 26
+#if (LIBNL_VER_MIN < 2) || (LIBNL_VER_MIN == 2) && (LIBNL_VER_MIC <= 26)
 
 #ifndef NLA_S8
 
@@ -45,6 +45,6 @@ static inline int32_t nla_get_s32(struct nlattr *nla)
 
 #endif /* NLA_S64 */
 
-#endif /* LIBNL_VER_MIC */
+#endif /* LIBNL_VER_* */
 
 #endif /* __NL_EXTRAS_H */
