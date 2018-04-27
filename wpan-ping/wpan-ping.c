@@ -194,7 +194,7 @@ static int get_interface_info(struct config *conf) {
 	nl_socket_modify_cb(conf->nl_sock, NL_CB_VALID, NL_CB_CUSTOM, nl_msg_cb, conf);
 	msg = nlmsg_alloc();
 	genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, conf->nl802154_id, 0, NLM_F_DUMP, NL802154_CMD_GET_INTERFACE, 0);
-	nla_put_string(msg, NL802154_ATTR_IFNAME, "conf->interface");
+	nla_put_string(msg, NL802154_ATTR_IFNAME, conf->interface);
 	nl_send_sync(conf->nl_sock, msg);
 
 	nl802154_cleanup(conf);
