@@ -21,4 +21,5 @@ AM_LDFLAGS = \
 SUBDIRS = \
 	src \
 	wpan-ping \
+	wpan-hwsim \
 	examples

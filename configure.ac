@@ -56,6 +56,7 @@ AC_CONFIG_FILES([
         Makefile
 	src/Makefile
 	wpan-ping/Makefile
+	wpan-hwsim/Makefile
 	examples/Makefile
 ])
 
