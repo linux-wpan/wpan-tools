@@ -393,7 +393,7 @@ int main(int argc, const char *argv[])
 		static struct option long_options[] = {
 			{"help",	no_argument,		0,	'h' },
 			{"version",	no_argument,		0,	'v' },
-			{"dot",		required_argument,	0,	'd' },
+			{"dot",		no_argument,		0,	'd' },
 			{"ignore",	required_argument,	0,	'i' },
 			{0,				0,	0,	0 }
 		};
