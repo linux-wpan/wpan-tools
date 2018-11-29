@@ -382,7 +382,7 @@ static void print_version(void)
 
 int main(int argc, const char *argv[])
 {
-	unsigned long int idx, idx2, lqi, ignore_idx = ULONG_MAX;
+	unsigned long int idx, idx2, lqi = 0, ignore_idx = ULONG_MAX;
 	bool dot = false;
 	int cmd;
 	int rc;
