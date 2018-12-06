@@ -35,7 +35,7 @@ int main(int argc, char *argv[]) {
 	int ret, sd;
 	struct sockaddr_in6 dst;
 	struct ifreq ifr;
-	unsigned char buf[MAX_PACKET_LEN + 1];
+	char buf[MAX_PACKET_LEN + 1];
 
 	/* Create IPv6 address family socket for the SOCK_DGRAM type */
 	sd = socket(PF_INET6, SOCK_DGRAM, 0);
