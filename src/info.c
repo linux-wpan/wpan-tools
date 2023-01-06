@@ -342,7 +342,7 @@ static int print_phy_handler(struct nl_msg *msg, void *arg)
 			printf("\b \n");
 		}
 
-		if (tb_msg[NL802154_CAP_ATTR_CHANNELS]) {
+		if (tb_caps[NL802154_CAP_ATTR_CHANNELS]) {
 			int counter = 0;
 			int rem_pages;
 			struct nlattr *nl_pages;
