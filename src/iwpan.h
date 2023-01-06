@@ -120,4 +120,6 @@ DECLARE_SECTION(get);
 
 const char *iftype_name(enum nl802154_iftype iftype);
 
+extern int iwpan_debug;
+
 #endif /* __IWPAN_H */
