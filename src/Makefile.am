@@ -10,6 +10,7 @@ iwpan_SOURCES = \
 	phy.c \
 	mac.c \
 	scan.c \
+	event.c \
 	nl_extras.h \
 	nl802154.h
 
