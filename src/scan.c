@@ -546,3 +546,46 @@ COMMAND(scan, trigger,
 	NL802154_CMD_TRIGGER_SCAN, 0, CIB_NETDEV, scan_trigger_handler,
 	"Launch scanning on this virtual interface with the given configuration.\n"
 	SCAN_TYPES);
+
+SECTION(beacons);
+
+static int send_beacons_handler(struct nl802154_state *state, struct nl_cb *cb,
+				struct nl_msg *msg, int argc, char **argv,
+				enum id_input id)
+{
+	unsigned long interval;
+	bool valid_interval;
+	int tpset;
+
+	tpset = get_option_value(&argc, &argv, "interval", &interval, &valid_interval);
+	if (tpset)
+		return tpset;
+	if (valid_interval && interval > UINT8_MAX)
+		return 1;
+
+	if (argc)
+		return 1;
+
+	/* Optional arguments */
+	if (valid_interval)
+		NLA_PUT_U8(msg, NL802154_ATTR_BEACON_INTERVAL, interval);
+
+	return 0;
+
+nla_put_failure:
+	return -ENOBUFS;
+}
+
+static int stop_beacons_handler(struct nl802154_state *state, struct nl_cb *cb,
+				struct nl_msg *msg, int argc, char **argv,
+				enum id_input id)
+{
+	return 0;
+}
+
+COMMAND(beacons, stop, NULL,
+	NL802154_CMD_STOP_BEACONS, 0, CIB_NETDEV, stop_beacons_handler,
+	"Stop sending beacons on this interface.");
+COMMAND(beacons, send, "[interval <interval-order>]",
+	NL802154_CMD_SEND_BEACONS, 0, CIB_NETDEV, send_beacons_handler,
+	"Send beacons on this virtual interface at a regular pace.");
