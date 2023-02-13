@@ -545,11 +545,15 @@ TOPLEVEL(scan, "type <type> [page <page>] [channels <bitfield>] [duration <durat
 	SCAN_TYPES);
 COMMAND(scan, abort, NULL, NL802154_CMD_ABORT_SCAN, 0, CIB_NETDEV, scan_abort_handler,
 	"Abort ongoing scanning on this virtual interface");
+COMMAND(scan, abort, NULL, NL802154_CMD_ABORT_SCAN, 0, CIB_PHY, scan_abort_handler, NULL);
 COMMAND(scan, trigger,
 	"type <type> [page <page>] [channels <bitfield>] [duration <duration-order>]",
 	NL802154_CMD_TRIGGER_SCAN, 0, CIB_NETDEV, scan_trigger_handler,
 	"Launch scanning on this virtual interface with the given configuration.\n"
 	SCAN_TYPES);
+COMMAND(scan, trigger,
+	"type <type> [page <page>] [channels <bitfield>] [duration <duration-order>]",
+	NL802154_CMD_TRIGGER_SCAN, 0, CIB_PHY, scan_trigger_handler, NULL);
 
 SECTION(beacons);
 
