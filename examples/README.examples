@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2016 Samsung Electronics Co., Ltd.
+//
+// SPDX-License-Identifier: ISC
+
 This folder contains various examples on how the Linux-wpan stack can be used
 from userspace, using the Linux socket interface.
 

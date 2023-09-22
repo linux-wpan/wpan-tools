@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2016 Samsung Electronics Co., Ltd.
+#
+# SPDX-License-Identifier: ISC
+
 noinst_PROGRAMS = af_ieee802154_tx \
 	          af_ieee802154_rx \
 	          af_packet_tx \
