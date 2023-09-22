@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2015 Stefan Schmidt <stefan@datenfreihafen.org>
+//
+// SPDX-License-Identifier: ISC
+
 wpan-ping aims to offer ping/ping6 like functionality on a IEEE 802.15.4 level.
 
 No control message protocol is defined so we will simply use DGRAM's over a

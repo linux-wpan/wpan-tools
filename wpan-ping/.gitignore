@@ -1,2 +1,6 @@
+# SPDX-FileCopyrightText: 2015 Stefan Schmidt <stefan@datenfreihafen.org>
+#
+# SPDX-License-Identifier: ISC
+
 .deps/
 wpan-ping

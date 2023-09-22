@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2015 Stefan Schmidt <stefan@datenfreihafen.org>
+#
+# SPDX-License-Identifier: ISC
+
 bin_PROGRAMS = wpan-ping
 
 wpan_ping_SOURCES = wpan-ping.c
