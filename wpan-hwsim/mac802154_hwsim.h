@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2018 Alexander Aring <aring@mojatatu.com>
+//
+// SPDX-License-Identifier: ISC
+
 #ifndef __MAC802154_HWSIM_H
 #define __MAC802154_HWSIM_H
 
