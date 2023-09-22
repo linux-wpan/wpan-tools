@@ -1,3 +1,7 @@
+dnl SPDX-FileCopyrightText: 2014 Alexander Aring <alex.aring@gmail.com>
+dnl
+dnl SPDX-License-Identifier: ISC
+
 AC_PREREQ(2.60)
 AC_INIT([Userspace tools for Linux IEEE 802.15.4 stack],
 	[0.9], [linux-wpan@vger.kernel.org], [wpan-tools],

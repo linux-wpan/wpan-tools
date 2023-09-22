@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2014 Alexander Aring <alex.aring@gmail.com>
+#
+# SPDX-License-Identifier: ISC
+
 EXTRA_DIST =
 CLEANFILES =
 ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
