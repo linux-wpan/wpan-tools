@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 David Girault <david.girault@qorvo.com>
+//
+// SPDX-License-Identifier: ISC
+
 #include <errno.h>
 #include <inttypes.h>
 #include <net/if.h>

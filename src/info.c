@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2014 Alexander Aring <alex.aring@gmail.com>
+//
+// SPDX-License-Identifier: ISC
+
 #include <stdbool.h>
 #include <errno.h>
 #include <net/if.h>

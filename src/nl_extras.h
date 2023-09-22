@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2014 Alexander Aring <alex.aring@gmail.com>
+//
+// SPDX-License-Identifier: ISC
+
 #ifndef __NL_EXTRAS_H
 #define __NL_EXTRAS_H
 
