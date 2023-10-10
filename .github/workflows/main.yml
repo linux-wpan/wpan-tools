@@ -6,6 +6,17 @@ name: Basic compile test for wpan-tools
 on: push
 
 jobs:
+  reuse:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+    - name: Install reuse tool
+      run: pip3 install reuse
+    - name: Run reuse lint
+      run: reuse lint
+    - name: Create SBOM
+      run: reuse spdx > sbom.txt
   compile:
     runs-on: ubuntu-latest
     env:
