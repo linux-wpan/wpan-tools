@@ -8,11 +8,16 @@ on: push
 jobs:
   compile:
     runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.cc }}
+    strategy:
+      matrix:
+        cc: [gcc, clang]
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
     - name: Install dependencies
-      run: sudo apt install libnl-3-dev libnl-genl-3-dev
+      run: sudo apt install libnl-3-dev libnl-genl-3-dev ${{ matrix.cc }}
     - name: autogen
       run: ./autogen.sh
     - name: configure
