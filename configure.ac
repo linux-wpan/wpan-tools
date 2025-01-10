@@ -4,7 +4,7 @@ dnl SPDX-License-Identifier: ISC
 
 AC_PREREQ(2.60)
 AC_INIT([Userspace tools for Linux IEEE 802.15.4 stack],
-	[0.9], [linux-wpan@vger.kernel.org], [wpan-tools],
+	[0.10], [linux-wpan@vger.kernel.org], [wpan-tools],
 	[https://github.com/linux-wpan/wpan-tools])
 AC_CONFIG_SRCDIR([src/iwpan.c])
 AC_CONFIG_AUX_DIR([build-aux])
